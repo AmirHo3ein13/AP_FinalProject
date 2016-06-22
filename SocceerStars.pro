@@ -18,13 +18,21 @@ SOURCES += main.cpp\
     realplayer.cpp \
     player.cpp \
     circle.cpp \
-    ball.cpp
+    ball.cpp \
+    formatation.cpp
 
 HEADERS  += mainwindow.h \
     game.h \
     realplayer.h \
     player.h \
     circle.h \
-    ball.h
+    ball.h \
+    formatation.h
 
 FORMS    += mainwindow.ui
+
+RESOURCES += \
+    resources.qrc
+
+DISTFILES += \
+    ../Downloads/rsz_sockerfield.jpg

@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/Images">
+        <file>fSoccer.jpg</file>
+    </qresource>
+    <qresource prefix="/Formatation">
+        <file>FormatationFile.txt</file>
+    </qresource>
+</RCC>

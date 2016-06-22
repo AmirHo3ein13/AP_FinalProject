@@ -1,6 +1,6 @@
 #include "realplayer.h"
 
-RealPlayer::RealPlayer()
+RealPlayer::RealPlayer(QGraphicsScene *s)
 {
 
 }

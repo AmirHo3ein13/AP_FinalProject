@@ -7,7 +7,7 @@
 class RealPlayer
 {
 public:
-    RealPlayer();
+    RealPlayer(QGraphicsScene *);
 
 private:
     Player *p1, *p2, *p3, *p4, *p5;
