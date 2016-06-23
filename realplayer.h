@@ -2,12 +2,13 @@
 #define REALPLAYER_H
 
 #include "player.h"
+#include "socketthread.h"
 
 
 class RealPlayer
 {
 public:
-    RealPlayer(QGraphicsScene *);
+    RealPlayer(SocketThread *, QGraphicsScene *);
 
 private:
     Player *p1, *p2, *p3, *p4, *p5;

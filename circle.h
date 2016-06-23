@@ -5,10 +5,10 @@
 class Circle
 {
 public:
-    Circle(double r, double x, double y);
+    Circle(double x, double y);
 
 protected:
-    double r, x, y;
+    double x, y;
 
 };
 

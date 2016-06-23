@@ -1,6 +1,13 @@
 <RCC>
     <qresource prefix="/Images">
         <file>fSoccer.jpg</file>
+        <file>brasil.png</file>
+        <file>spain.png</file>
+        <file>argentina.png</file>
+        <file>iran.png</file>
+        <file>italy.png</file>
+        <file>germany.png</file>
+        <file>ball.png</file>
     </qresource>
     <qresource prefix="/Formatation">
         <file>FormatationFile.txt</file>

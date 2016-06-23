@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -19,7 +19,8 @@ SOURCES += main.cpp\
     player.cpp \
     circle.cpp \
     ball.cpp \
-    formatation.cpp
+    formatation.cpp \
+    socketthread.cpp
 
 HEADERS  += mainwindow.h \
     game.h \
@@ -27,7 +28,8 @@ HEADERS  += mainwindow.h \
     player.h \
     circle.h \
     ball.h \
-    formatation.h
+    formatation.h \
+    socketthread.h
 
 FORMS    += mainwindow.ui
 
