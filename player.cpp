@@ -39,6 +39,7 @@ Player::Player(SocketThread *thread, QObject *parent) : QObject(parent) , Circle
 void Player::setMovePlayers(int)
 {
     //add some collision check and ...
+
 }
 
 //when mouse press on player
@@ -92,11 +93,11 @@ void Player::drawLine(double, double)
 }
 
 double Player::xC(double d) {
-    return d + 40;
+    return d + 33;
 }
 
 double Player::yC(double d) {
-    return d + 44;
+    return d + 34;
 }
 
 void Player::changeColorOfLine(int tmp)

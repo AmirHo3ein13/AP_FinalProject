@@ -1,8 +1,9 @@
 #include "socketthread.h"
 #include <sstream>
+#include <QStringList>
+#include <cstring>
 
 using namespace std;
-
 SocketThread::SocketThread(QObject *parent)
 {
 
@@ -28,8 +29,8 @@ void SocketThread::newMessage()
             return;
         QStringList l = message.split(QChar(23));
         message = l.takeLast();
-        foreach(QString str, l) {
-            string tmpS = str.toStdString();
+        for(int i = 0; i < l.size();i++) {
+            string tmpS = l[i].toStdString();
             stringstream stream(tmpS);
             int a;
             double b, c;

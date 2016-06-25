@@ -8,6 +8,7 @@
         <file>italy.png</file>
         <file>germany.png</file>
         <file>ball.png</file>
+        <file>goal.png</file>
     </qresource>
     <qresource prefix="/Formatation">
         <file>FormatationFile.txt</file>
