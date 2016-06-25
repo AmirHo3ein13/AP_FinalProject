@@ -105,18 +105,17 @@ void Player::setMovePlayers(int)
         }
         else if(Border *b = dynamic_cast<Border *> (l[i])) {
             if(b->x1 == b->x2) {
-                this->vX *= -1;
-                if(this->pos().x() < 109 && ((this->pos().y() > 6 && this->pos().y() < 226) || (this->pos().y() > 458 && this->pos().y() < 674)))
-                    this->setX(109);
-                else if(xC(this->pos().x()) + this->r > 1171 && ((this->pos().y() > 6 && this->pos().y() < 226) || ( this->pos().y() > 445 && this->pos().y() < 674)))
-                    this->setX(1171 - this->r * 2);
-            }
-            if(b->y1 == b->y2) {
-                this->vY *= -1;
+                this->vX *= -.8;
+                this->setX(this->pos().x() + this->vX);
+
+         }
+            else if(b->y1 == b->y2) {
+                this->vY *= -.8;
                 if(this->pos().y() < 6)
                     this->setY(6);
-                else if(this->pos().y() > (674 - this-> r * 2))
-                    this->setY(674 - (this->r * 2));
+                if(this->pos().y() + this->r * 2 > 674)
+                    this->setY(this->pos().y()- this->r * 2);
+                this->setY(this->pos().y() + this->vY);
             }
 
         }
@@ -144,8 +143,8 @@ void Player::setMovePlayers(int)
                 }
                 double fOnMC = picOfVxOnMC + picOfVyOnMC, fOnMCN = picOfVxOnMCN + picOfVyOnMCN, sOnMC = sPicOfVxONMC + sPicOfVyOnMC, sOnMCN = sPicofVxOnMCN + sPicOfVyOnMCN;
                 double tmp = fOnMC;
-                fOnMC = sOnMC * 10 / 14;
-                sOnMC = tmp * 1.4;
+                fOnMC = sOnMC * 1.4;
+                sOnMC = tmp * 1.2;
                 if(mCenters < 0) {
                     double fVx1 = fOnMCN * coss(mCNorm), fVx2 = fOnMC * coss(mCenters) * -1, fVy1 = fOnMCN * sinn(mCNorm) * -1, fVy2 = fOnMC * sinn(mCenters) * -1;
                     this->vX = fVx1 + fVx2; this->vY = fVy1 + fVy2;

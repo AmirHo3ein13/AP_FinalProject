@@ -9,6 +9,10 @@
         <file>germany.png</file>
         <file>ball.png</file>
         <file>goal.png</file>
+        <file>vRodL.jpeg</file>
+        <file>vRodR.jpeg</file>
+        <file>hRodU.jpeg</file>
+        <file>hRodD.jpeg</file>
     </qresource>
     <qresource prefix="/Formatation">
         <file>FormatationFile.txt</file>

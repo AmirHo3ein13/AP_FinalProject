@@ -29,19 +29,16 @@ void Ball::setMovingBall(int)
     for(int i = 0; i < l.size(); i++) {
         if(Border *b = dynamic_cast<Border *> (l[i])) {
                     if(b->x1 == b->x2) {
-                        this->vX *= -1;
-                        if(this->pos().x() < 109 && ((this->pos().y() > 6 && this->pos().y() < 226) || (this->pos().y() > 458 && this->pos().y() < 674)))
-                            this->setX(110);
-                        else if(xC(this->pos().x()) + this->r > 1171 && ((this->pos().y() > 6 && this->pos().y() < 226) || ( this->pos().y() > 445 && this->pos().y() < 674)))
-                            this->setX(1171 - this->r * 2);
+
+                            this->vX *= -1;
+                            this->setX(this->pos().x() + this->vX);
                     }
-                    if(b->y1 == b->y2) {
-                        this->vY *= -1;
-                        if(this->pos().y() < 6)
-                            this->setY(7);
-                        else if(this->pos().y() > (674 - this-> r * 2))
-                            this->setY(674 - (this->r * 2) - 1);
-                    }
+
+                        if(b->y1 == b->y2) {
+                            this->vY *= -1;
+                            this->setY(this->pos().y() + this->vY);
+                        }
+
 
                 }
         if(Player *c = dynamic_cast<Player *> (l[i])) {

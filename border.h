@@ -10,6 +10,7 @@ class Border : public QObject, public QGraphicsLineItem
 public:
     explicit Border(double x1, double x2, double y1, double y2, QObject *parent = 0);
     double x1, x2, y1, y2;
+    int isSpecial = 0;
 
 signals:
 
