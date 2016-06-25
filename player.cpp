@@ -44,13 +44,14 @@ Player::Player(double cxX, double cyY, SocketThread *thread, QObject *parent) : 
 }
 
 //this is for moving circle and checking collisions of circle
+//chckin collision between player and ball, player and line
 void Player::setMovePlayers(int)
 {
     //add some collision check and ...
     this->setPos(this->pos().x() + vX, this->pos().y() + vY);
     vX > 0 ? vX -= fx : vX += fx;
     vY > 0 ? vY -= fy : vY += fy;
-    if(abs(vX) < .2) {
+    if(abs(vX) < .2 && abs(vY) < .2) {
         animation->stop();
         return;
     }
@@ -58,8 +59,6 @@ void Player::setMovePlayers(int)
     QList<QGraphicsItem *> l = this->collidingItems();
     for(int i = 0; i < l.size(); i++) {
         if(Player *c = dynamic_cast<Player *> (l[i])) {
-//            if(sqrt(((this->Circle::x - c->Circle::x) * (this->Circle::x - c->Circle::x)) + ((this->Circle::y - c->Circle::y) * (this->Circle::y - c->Circle::y))) > 100)
-//                continue;
             double thisCx = xC(this->pos().x()), thisCy = yC(this->pos().y()), otherCx = c->xC(c->pos().x()), otherCy = c->yC(c->pos().y());
             thisCy *= -1; otherCy *= -1;
             if(thisCx - otherCx == 0) {
@@ -105,11 +104,67 @@ void Player::setMovePlayers(int)
             }
         }
         else if(Border *b = dynamic_cast<Border *> (l[i])) {
-            if(b->x1 == b->x2)
+            if(b->x1 == b->x2) {
                 this->vX *= -1;
-            if(b->y1 == b->y2)
+                if(this->pos().x() < 109 && ((this->pos().y() > 6 && this->pos().y() < 226) || (this->pos().y() > 458 && this->pos().y() < 674)))
+                    this->setX(109);
+                else if(xC(this->pos().x()) + this->r > 1171 && ((this->pos().y() > 6 && this->pos().y() < 226) || ( this->pos().y() > 445 && this->pos().y() < 674)))
+                    this->setX(1171 - this->r * 2);
+            }
+            if(b->y1 == b->y2) {
                 this->vY *= -1;
+                if(this->pos().y() < 6)
+                    this->setY(6);
+                else if(this->pos().y() > (674 - this-> r * 2))
+                    this->setY(674 - (this->r * 2));
+            }
 
+        }
+        else if(Ball *c = dynamic_cast<Ball *> (l[i])) {
+
+            double thisCx = xC(this->pos().x()), thisCy = yC(this->pos().y()), otherCx = c->xC(c->pos().x()), otherCy = c->yC(c->pos().y());
+            thisCy *= -1; otherCy *= -1;
+            if(thisCx - otherCx == 0) {
+                double tmp = this->vY;
+                this->vY = c->vY;
+                c->vY = tmp;
+            }
+            else {//collinding ball...
+                double mCenters = (thisCy - otherCy) / (thisCx - otherCx);
+                double mCNorm = -1. / mCenters;
+                double picOfVxOnMC = coss(mCenters) * vX, picOfVxOnMCN = coss(mCNorm) * vX, picOfVyOnMC = sinn(mCenters) * vY * -1, picOfVyOnMCN = sinn(mCNorm) * vY * -1;
+                double sPicOfVxONMC = coss(mCenters) * c->vX, sPicofVxOnMCN = coss(mCNorm) * c->vX, sPicOfVyOnMC = sinn(mCenters) * c->vY * -1, sPicOfVyOnMCN = sinn(mCNorm) * c->vY * -1;
+                if(mCenters < 0) {
+                    picOfVxOnMC *= -1;
+                    sPicOfVxONMC *= -1;
+                }
+                else {
+                    picOfVxOnMCN *= -1;
+                    sPicofVxOnMCN *= -1;
+                }
+                double fOnMC = picOfVxOnMC + picOfVyOnMC, fOnMCN = picOfVxOnMCN + picOfVyOnMCN, sOnMC = sPicOfVxONMC + sPicOfVyOnMC, sOnMCN = sPicofVxOnMCN + sPicOfVyOnMCN;
+                double tmp = fOnMC;
+                fOnMC = sOnMC * 10 / 14;
+                sOnMC = tmp * 1.4;
+                if(mCenters < 0) {
+                    double fVx1 = fOnMCN * coss(mCNorm), fVx2 = fOnMC * coss(mCenters) * -1, fVy1 = fOnMCN * sinn(mCNorm) * -1, fVy2 = fOnMC * sinn(mCenters) * -1;
+                    this->vX = fVx1 + fVx2; this->vY = fVy1 + fVy2;
+                    double sVx1 = sOnMCN * coss(mCNorm), sVx2 = sOnMC * coss(mCenters) * -1, sVy1 = sOnMCN * sinn(mCNorm) * -1, sVy2 = sOnMC * sinn(mCenters) * -1;
+                    c->vX = sVx1 + sVx2; c->vY = sVy1 + sVy2;
+                }
+                else {
+                   double fVx1 = fOnMCN * coss(mCNorm) * -1, fVx2 = fOnMC * coss(mCenters), fVy1 = fOnMCN * sinn(mCNorm) * -1, fVy2 = fOnMC * sinn(mCenters) * -1;
+                   this->vX = fVx1 + fVx2; this->vY = fVy1 + fVy2;
+                   double sVx1 = sOnMCN * coss(mCNorm) * -1, sVx2 = sOnMC * coss(mCenters), sVy1 = sOnMCN * sinn(mCNorm) * -1, sVy2 = sOnMC * sinn(mCenters) * -1;
+                   c->vX = sVx1 + sVx2; c->vY = sVy1 + sVy2;
+                }
+                qDebug() << "got here";
+                this->setPos(this->pos().x() + 2 * this->vX, this->pos().y() + 2 * this->vY);
+                c->setPos(c->pos().x() + 2 * c->vX, c->pos().y() + 2 * c->vY);
+                this->startAnimaion();
+                c->animation->start();
+                c->startAnimaion();
+            }
         }
     }
 }

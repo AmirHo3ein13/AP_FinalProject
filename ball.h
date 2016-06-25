@@ -19,9 +19,10 @@ public:
     double r;
     double xC(double){return this->pos().x() + 15;}
     double yC(double){return this->pos().y() + 15;}
-    double vX, vY;
+    double vX, vY, fX, fY;
     QPropertyAnimation *animation;
     void startAnimaion();
+    bool collidesWithItem(QGraphicsItem *other, Qt::ItemSelectionMode mode) const;
 
 private:
     //sin and cos for collision

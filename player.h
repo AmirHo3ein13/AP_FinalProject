@@ -26,17 +26,18 @@ public:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *);
     bool collidesWithItem(QGraphicsItem *other, Qt::ItemSelectionMode mode) const;
     double r;
-
-private:
-    QPropertyAnimation *animation;
-    int width, height;
     double xC(double);
     double yC(double);
+    double fx, fy, vX, vY;
+    void startAnimaion();
+        QPropertyAnimation *animation;
+
+private:
+    int width, height;
     QGraphicsLineItem *line;
     QPen p1, p2, p3;
     void changeColorOfLine(int tmp);
-    double fx, fy, vX, vY;
-    void startAnimaion();
+
 
     //sin and cos for collision
     double coss(double a) {
