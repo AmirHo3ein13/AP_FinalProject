@@ -20,7 +20,8 @@ SOURCES += main.cpp\
     circle.cpp \
     ball.cpp \
     formatation.cpp \
-    socketthread.cpp
+    socketthread.cpp \
+    border.cpp
 
 HEADERS  += mainwindow.h \
     game.h \
@@ -29,7 +30,8 @@ HEADERS  += mainwindow.h \
     circle.h \
     ball.h \
     formatation.h \
-    socketthread.h
+    socketthread.h \
+    border.h
 
 FORMS    += mainwindow.ui
 

@@ -7,7 +7,7 @@ class Circle
 public:
     Circle(double x, double y);
 
-protected:
+public:
     double x, y;
 
 };

@@ -1,6 +1,7 @@
 #include "player.h"
-
-#include"socketthread.h"
+#include "ball.h"
+#include "socketthread.h"
+#include "border.h"
 #include "QGraphicsSceneMouseEvent"
 #include <QDebug>
 #include <stdlib.h>
@@ -11,9 +12,10 @@
 
 using namespace std;
 
-Player::Player(SocketThread *thread, QObject *parent) : QObject(parent) , Circle(0, 0), animation(new QPropertyAnimation(this)) //change the circle r, x, y too
+Player::Player(double cxX, double cyY, SocketThread *thread, QObject *parent) : QObject(parent) , Circle(cxX, cyY), animation(new QPropertyAnimation(this)) //change the circle r, x, y too
 {
 
+    r = 35;
     width = 70; height = 77;//this may be changed...
     line = new QGraphicsLineItem(0, 0, 0, 0, this);
 
@@ -29,7 +31,7 @@ Player::Player(SocketThread *thread, QObject *parent) : QObject(parent) , Circle
 
     //checking
     setPixmap(QPixmap(":/Images/brasil.png"));
-    setPos(900 - 50, 500 - 55);
+    setPos(cxX, cyY);
     this->setFlag(QGraphicsItem::ItemIsMovable);
     this->setFlag(QGraphicsItem::ItemIsFocusable);
     this->setAcceptTouchEvents(true);
@@ -53,6 +55,63 @@ void Player::setMovePlayers(int)
         return;
     }
 
+    QList<QGraphicsItem *> l = this->collidingItems();
+    for(int i = 0; i < l.size(); i++) {
+        if(Player *c = dynamic_cast<Player *> (l[i])) {
+//            if(sqrt(((this->Circle::x - c->Circle::x) * (this->Circle::x - c->Circle::x)) + ((this->Circle::y - c->Circle::y) * (this->Circle::y - c->Circle::y))) > 100)
+//                continue;
+            double thisCx = xC(this->pos().x()), thisCy = yC(this->pos().y()), otherCx = c->xC(c->pos().x()), otherCy = c->yC(c->pos().y());
+            thisCy *= -1; otherCy *= -1;
+            if(thisCx - otherCx == 0) {
+                double tmp = this->vY;
+                this->vY = c->vY;
+                c->vY = tmp;
+            }
+            else {
+                double mCenters = (thisCy - otherCy) / (thisCx - otherCx);
+                double mCNorm = -1. / mCenters;
+                double picOfVxOnMC = coss(mCenters) * vX, picOfVxOnMCN = coss(mCNorm) * vX, picOfVyOnMC = sinn(mCenters) * vY * -1, picOfVyOnMCN = sinn(mCNorm) * vY * -1;
+                double sPicOfVxONMC = coss(mCenters) * c->vX, sPicofVxOnMCN = coss(mCNorm) * c->vX, sPicOfVyOnMC = sinn(mCenters) * c->vY * -1, sPicOfVyOnMCN = sinn(mCNorm) * c->vY * -1;
+                if(mCenters < 0) {
+                    picOfVxOnMC *= -1;
+                    sPicOfVxONMC *= -1;
+                }
+                else {
+                    picOfVxOnMCN *= -1;
+                    sPicofVxOnMCN *= -1;
+                }
+                double fOnMC = picOfVxOnMC + picOfVyOnMC, fOnMCN = picOfVxOnMCN + picOfVyOnMCN, sOnMC = sPicOfVxONMC + sPicOfVyOnMC, sOnMCN = sPicofVxOnMCN + sPicOfVyOnMCN;
+                double tmp = fOnMC;
+                fOnMC = sOnMC;
+                sOnMC = tmp;
+                if(mCenters < 0) {
+                    double fVx1 = fOnMCN * coss(mCNorm), fVx2 = fOnMC * coss(mCenters) * -1, fVy1 = fOnMCN * sinn(mCNorm) * -1, fVy2 = fOnMC * sinn(mCenters) * -1;
+                    this->vX = fVx1 + fVx2; this->vY = fVy1 + fVy2;
+                    double sVx1 = sOnMCN * coss(mCNorm), sVx2 = sOnMC * coss(mCenters) * -1, sVy1 = sOnMCN * sinn(mCNorm) * -1, sVy2 = sOnMC * sinn(mCenters) * -1;
+                    c->vX = sVx1 + sVx2; c->vY = sVy1 + sVy2;
+                }
+                else {
+                   double fVx1 = fOnMCN * coss(mCNorm) * -1, fVx2 = fOnMC * coss(mCenters), fVy1 = fOnMCN * sinn(mCNorm) * -1, fVy2 = fOnMC * sinn(mCenters) * -1;
+                   this->vX = fVx1 + fVx2; this->vY = fVy1 + fVy2;
+                   double sVx1 = sOnMCN * coss(mCNorm) * -1, sVx2 = sOnMC * coss(mCenters), sVy1 = sOnMCN * sinn(mCNorm) * -1, sVy2 = sOnMC * sinn(mCenters) * -1;
+                   c->vX = sVx1 + sVx2; c->vY = sVy1 + sVy2;
+                }
+                qDebug() << "got here";
+                this->setPos(this->pos().x() + 2 * this->vX, this->pos().y() + 2 * this->vY);
+                c->setPos(c->pos().x() + 2 * c->vX, c->pos().y() + 2 * c->vY);
+                this->startAnimaion();
+                c->animation->start();
+                c->startAnimaion();
+            }
+        }
+        else if(Border *b = dynamic_cast<Border *> (l[i])) {
+            if(b->x1 == b->x2)
+                this->vX *= -1;
+            if(b->y1 == b->y2)
+                this->vY *= -1;
+
+        }
+    }
 }
 
 //when mouse press on player
@@ -107,6 +166,38 @@ void Player::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         line->setLine(xC(0), yC(0), -(event->pos().x() - 2 * xC(0)), -(event->pos().y() - 2 * yC(0)));
     }
     changeColorOfLine(tmp);
+}
+
+//detect collisions
+bool Player::collidesWithItem(QGraphicsItem *other, Qt::ItemSelectionMode mode) const
+{
+    if(Ball *b = dynamic_cast<Ball *> (other)) {
+        double tX = this->Circle::x, tY = this->Circle::y, oX = b->Circle::x, oY = b->Circle::y;
+        double tmp = sqrt((tX - oX) * (tX - oX) + (tY - oY) * (tY - oY));
+        if(tmp <= this->r + b->r)
+            return true;
+        return false;
+    }
+    else if (Player *b = dynamic_cast<Player *> (other)) {
+        double tX = this->Circle::x, tY = this->Circle::y, oX = b->Circle::x, oY = b->Circle::y;
+        double tmp = sqrt((tX - oX) * (tX - oX) + (tY - oY) * (tY - oY));
+        if(tmp <= this->r + b->r)
+            return true;
+        return false;
+    }
+    else if(Border *b = dynamic_cast<Border *> (other)) {
+        if(b->x1 == b->x2) {
+            if(abs(this->Circle::x - b->x1) <= this->r)
+                return true;
+            return false;
+        }
+        else {
+            if(abs(this->Circle::y - b->y1) <= this->r)
+                return true;
+            return false;
+        }
+    }
+    return false;
 }
 
 //when server sends movePlayer Singnal
