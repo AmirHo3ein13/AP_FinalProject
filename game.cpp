@@ -8,6 +8,10 @@
 #include "border.h"
 #include <QPixmap>
 #include <QGraphicsPixmapItem>
+#include <iostream>
+#include <QFile>
+
+using namespace std;
 
 Game::Game()
 {
@@ -42,7 +46,9 @@ Game::Game()
            VrR2->setPixmap(QPixmap(":/Images/vRodR.jpeg"));
 
        scene->addItem(b);
-       RealPlayer p(t, scene);
+       //creating real players...
+       RealPlayer p1(t, scene, 1, "brasil.png");
+       RealPlayer p2(t, scene, 2, "iran.png");
        scene->addItem(pm1);
        scene->addItem(pm2);
 

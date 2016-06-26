@@ -16,5 +16,6 @@
     </qresource>
     <qresource prefix="/Formatation">
         <file>FormatationFile.txt</file>
+        <file>format.txt</file>
     </qresource>
 </RCC>

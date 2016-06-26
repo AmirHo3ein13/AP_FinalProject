@@ -28,22 +28,29 @@ void Ball::setMovingBall(int)
     QList<QGraphicsItem *> l = this->collidingItems();
     for(int i = 0; i < l.size(); i++) {
         if(Border *b = dynamic_cast<Border *> (l[i])) {
-                    if(b->x1 == b->x2) {
-
-                            this->vX *= -1;
-                            this->setX(this->pos().x() + this->vX);
-                    }
-
-                        if(b->y1 == b->y2) {
-                            this->vY *= -1;
-                            this->setY(this->pos().y() + this->vY);
-                        }
-
-
+            if(b->x1 == b->x2) {
+                this->vX *= -.8;
+//                this->setX(this->pos().x() + this->vX);
+                if(abs(xC(this->pos().x()) - b->x()) < this->r) {
+                    if(xC(this->pos().x()) - b->x() < 0)
+                        this->setX(this->pos().x() - abs(b->x() - this->r));
+                    else if(xC(this->pos().x() - (b->x() + 5) > 0))
+                        this->setX(this->pos().x() + abs(b->x() - this->r));
                 }
+
+         }
+            else if(b->y1 == b->y2) {
+                this->vY *= -.8;
+                if(this->pos().y() < 6)
+                    this->setY(6);
+                if(this->pos().y() + this->r * 2 > 674)
+                    this->setY(this->pos().y()- this->r * 2);
+                this->setY(this->pos().y() + this->vY);
+            }
+        }
         if(Player *c = dynamic_cast<Player *> (l[i])) {
             double thisCx = xC(this->pos().x()), thisCy = yC(this->pos().y()), otherCx = c->xC(c->pos().x()), otherCy = c->yC(c->pos().y());
-            thisCy *= -1; otherCy *= -1;
+            //thisCy *= -1; otherCy *= -1;
             if(thisCx - otherCx == 0) {
                 double tmp = this->vY;
                 this->vY = c->vY;
@@ -78,7 +85,7 @@ void Ball::setMovingBall(int)
                    double sVx1 = sOnMCN * coss(mCNorm) * -1, sVx2 = sOnMC * coss(mCenters), sVy1 = sOnMCN * sinn(mCNorm) * -1, sVy2 = sOnMC * sinn(mCenters) * -1;
                    c->vX = sVx1 + sVx2; c->vY = sVy1 + sVy2;
                 }
-                qDebug() << "got here";
+                qDebug() << c->vX << " " << c->vY;
                 this->setPos(this->pos().x() + 2 * this->vX, this->pos().y() + 2 * this->vY);
                 c->setPos(c->pos().x() + 2 * c->vX, c->pos().y() + 2 * c->vY);
                 this->startAnimaion();

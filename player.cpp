@@ -12,9 +12,10 @@
 
 using namespace std;
 
-Player::Player(double cxX, double cyY, SocketThread *thread, QObject *parent) : QObject(parent) , Circle(cxX, cyY), animation(new QPropertyAnimation(this)) //change the circle r, x, y too
+Player::Player(double cxX, double cyY, SocketThread *thread, int number, QObject *parent) : QObject(parent) , Circle(cxX, cyY), animation(new QPropertyAnimation(this)) //change the circle r, x, y too
 {
-
+    this->number = number;
+    this->vX = this->vY = 0;
     r = 35;
     width = 70; height = 77;//this may be changed...
     line = new QGraphicsLineItem(0, 0, 0, 0, this);
@@ -23,24 +24,69 @@ Player::Player(double cxX, double cyY, SocketThread *thread, QObject *parent) : 
     p1 = p2 = p3 = line->pen();
     p1.setWidth(10); p2.setWidth(10); p3.setWidth(10);
     p1.setColor(Qt::yellow); p2.setColor("orange"); p3.setColor(Qt::red); //seting line colors
-
     //manipulating thread signals
     connect(thread, SIGNAL(movePlayer(double,double)), this, SLOT(movePlayer(double,double)));
     connect(thread, SIGNAL(drawLine(double,double)), this, SLOT(drawLine(double,double)));
 
 
     //checking
-    setPixmap(QPixmap(":/Images/brasil.png"));
-    setPos(cxX, cyY);
+    if(number == 1)
+        setPos(0, 0);
+    else
+        setPos(1175, 0);
+    finalDesX = cxX; finalDexY = cyY;
+    rePositioning();
     this->setFlag(QGraphicsItem::ItemIsMovable);
     this->setFlag(QGraphicsItem::ItemIsFocusable);
     this->setAcceptTouchEvents(true);
     this->setFlags(QGraphicsItem::ItemIsSelectable);
     this->setAcceptHoverEvents(true);
 
+    animation->setStartValue(vX);
+    animation->setEndValue(.1);
     animation->setPropertyName("movePlayers");
     animation->setTargetObject(this);
 
+}
+
+void Player::setChangeX(int)
+{
+    if(this->pos().x() - this->finalDesX > 0) {
+        if(abs(this->pos().x() - 5) > this->finalDesX)
+            this->setX(this->pos().x() - 5);
+        else {
+            this->setX(this->pos().x() - abs(this->pos().x() - this->finalDesX));
+            this->anForMovingX->stop();
+        }
+    }
+    else {
+        if(abs(this->pos().x() + 5) < this->finalDesX)
+            this->setX(this->pos().x() + 5);
+        else {
+            this->setX(this->pos().x() + abs(this->pos().x() - this->finalDesX));
+            this->anForMovingX->stop();
+        }
+    }
+}
+
+void Player::setChangeY(int)
+{
+    if(this->pos().y() - this->finalDexY > 0) {
+        if(abs(this->pos().y() - 5) > finalDexY)
+            this->setY(this->pos().y() - 5);
+        else {
+            this->setY(this->pos().y() - abs(this->pos().y() - this->finalDexY));
+            this->anForMovingY->stop();
+        }
+    }
+    else {
+        if(abs(this->pos().y() + 5) < finalDexY)
+            this->setY(this->pos().y() + 5);
+        else {
+            this->setY(this->pos().y() + abs(this->pos().y() - this->finalDexY));
+            this->anForMovingY->stop();
+        }
+    }
 }
 
 //this is for moving circle and checking collisions of circle
@@ -81,8 +127,8 @@ void Player::setMovePlayers(int)
                 }
                 double fOnMC = picOfVxOnMC + picOfVyOnMC, fOnMCN = picOfVxOnMCN + picOfVyOnMCN, sOnMC = sPicOfVxONMC + sPicOfVyOnMC, sOnMCN = sPicofVxOnMCN + sPicOfVyOnMCN;
                 double tmp = fOnMC;
-                fOnMC = sOnMC;
-                sOnMC = tmp;
+                fOnMC = .9 * sOnMC;
+                sOnMC = .9 * tmp;
                 if(mCenters < 0) {
                     double fVx1 = fOnMCN * coss(mCNorm), fVx2 = fOnMC * coss(mCenters) * -1, fVy1 = fOnMCN * sinn(mCNorm) * -1, fVy2 = fOnMC * sinn(mCenters) * -1;
                     this->vX = fVx1 + fVx2; this->vY = fVy1 + fVy2;
@@ -94,19 +140,22 @@ void Player::setMovePlayers(int)
                    this->vX = fVx1 + fVx2; this->vY = fVy1 + fVy2;
                    double sVx1 = sOnMCN * coss(mCNorm) * -1, sVx2 = sOnMC * coss(mCenters), sVy1 = sOnMCN * sinn(mCNorm) * -1, sVy2 = sOnMC * sinn(mCenters) * -1;
                    c->vX = sVx1 + sVx2; c->vY = sVy1 + sVy2;
-                }
-                qDebug() << "got here";
-                this->setPos(this->pos().x() + 2 * this->vX, this->pos().y() + 2 * this->vY);
+                }                this->setPos(this->pos().x() + 2 * this->vX, this->pos().y() + 2 * this->vY);
                 c->setPos(c->pos().x() + 2 * c->vX, c->pos().y() + 2 * c->vY);
                 this->startAnimaion();
-                c->animation->start();
                 c->startAnimaion();
             }
         }
         else if(Border *b = dynamic_cast<Border *> (l[i])) {
             if(b->x1 == b->x2) {
                 this->vX *= -.8;
-                this->setX(this->pos().x() + this->vX);
+//                this->setX(this->pos().x() + this->vX);
+                if(abs(xC(this->pos().x()) - b->x()) < this->r) {
+                    if(xC(this->pos().x()) - b->x() < 0)
+                        this->setX(this->pos().x() - abs(b->x() - this->r));
+                    else if(xC(this->pos().x() - (b->x() + 5) > 0))
+                        this->setX(this->pos().x() + abs(b->x() - this->r));
+                }
 
          }
             else if(b->y1 == b->y2) {
@@ -157,7 +206,6 @@ void Player::setMovePlayers(int)
                    double sVx1 = sOnMCN * coss(mCNorm) * -1, sVx2 = sOnMC * coss(mCenters), sVy1 = sOnMCN * sinn(mCNorm) * -1, sVy2 = sOnMC * sinn(mCenters) * -1;
                    c->vX = sVx1 + sVx2; c->vY = sVy1 + sVy2;
                 }
-                qDebug() << "got here";
                 this->setPos(this->pos().x() + 2 * this->vX, this->pos().y() + 2 * this->vY);
                 c->setPos(c->pos().x() + 2 * c->vX, c->pos().y() + 2 * c->vY);
                 this->startAnimaion();
@@ -289,6 +337,17 @@ void Player::changeColorOfLine(int tmp)
     }
 }
 
+void Player::rePositioning()
+{
+    anForMovingX = new QPropertyAnimation(this); anForMovingY = new QPropertyAnimation(this);
+    anForMovingX->setPropertyName("changeX"); anForMovingY->setPropertyName("changeY");
+    anForMovingX->setDuration(1500); anForMovingY->setDuration(1500);
+    anForMovingX->setStartValue(this->pos().x()); anForMovingX->setEndValue(this->finalDesX);
+    anForMovingY->setStartValue(this->pos().y()); anForMovingY->setEndValue(this->finalDexY);
+    anForMovingX->setTargetObject(this); anForMovingY->setTargetObject(this);
+    anForMovingX->start(); anForMovingY->start();
+}
+
 //this is for starting animation
 void Player::startAnimaion()
 {
@@ -300,4 +359,5 @@ void Player::startAnimaion()
     animation->setEndValue(0);
     animation->setDuration(2000000);
     animation->start();
+    qDebug() << this->number;
 }
