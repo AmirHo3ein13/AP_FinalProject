@@ -9,11 +9,19 @@
 #include <QGraphicsLineItem>
 #include <stdlib.h>
 #include <cmath>
+#include <QMediaPlayer>
 
 using namespace std;
 
-Player::Player(double cxX, double cyY, SocketThread *thread, int number, QObject *parent) : QObject(parent) , Circle(cxX, cyY), animation(new QPropertyAnimation(this)) //change the circle r, x, y too
+void Player::run()
 {
+
+}
+
+Player::Player(double cxX, double cyY, SocketThread *thread, int number, QObject *parent) : Circle(cxX, cyY), animation(new QPropertyAnimation(this)) //change the circle r, x, y too
+{
+
+    this->thread = thread;
     this->number = number;
     this->vX = this->vY = 0;
     r = 35;
@@ -25,8 +33,7 @@ Player::Player(double cxX, double cyY, SocketThread *thread, int number, QObject
     p1.setWidth(10); p2.setWidth(10); p3.setWidth(10);
     p1.setColor(Qt::yellow); p2.setColor("orange"); p3.setColor(Qt::red); //seting line colors
     //manipulating thread signals
-    connect(thread, SIGNAL(movePlayer(double,double)), this, SLOT(movePlayer(double,double)));
-    connect(thread, SIGNAL(drawLine(double,double)), this, SLOT(drawLine(double,double)));
+
 
 
     //checking
@@ -105,6 +112,13 @@ void Player::setMovePlayers(int)
     QList<QGraphicsItem *> l = this->collidingItems();
     for(int i = 0; i < l.size(); i++) {
         if(Player *c = dynamic_cast<Player *> (l[i])) {
+
+            //adding sound of collision between players...
+            QMediaPlayer *shot = new QMediaPlayer();
+            shot->setMedia(QUrl("qrc:/sounds/p2p.flac"));
+            shot->setVolume(110);
+            shot->play();
+
             double thisCx = xC(this->pos().x()), thisCy = yC(this->pos().y()), otherCx = c->xC(c->pos().x()), otherCy = c->yC(c->pos().y());
             thisCy *= -1; otherCy *= -1;
             if(thisCx - otherCx == 0) {
@@ -147,6 +161,14 @@ void Player::setMovePlayers(int)
             }
         }
         else if(Border *b = dynamic_cast<Border *> (l[i])) {
+
+
+            //adding sound of collision between player and borders...
+            QMediaPlayer *shot = new QMediaPlayer();
+            shot->setMedia(QUrl("qrc:/sounds/p2p.flac"));
+            shot->setVolume(110);
+            shot->play();
+
             if(b->x1 == b->x2) {
                 this->vX *= -.8;
 //                this->setX(this->pos().x() + this->vX);
@@ -169,6 +191,12 @@ void Player::setMovePlayers(int)
 
         }
         else if(Ball *c = dynamic_cast<Ball *> (l[i])) {
+
+            //adding sound of collision between player and ball...
+            QMediaPlayer *shot = new QMediaPlayer();
+            shot->setMedia(QUrl("qrc:/sounds/p2p.flac"));
+            shot->setVolume(110);
+            shot->play();
 
             double thisCx = xC(this->pos().x()), thisCy = yC(this->pos().y()), otherCx = c->xC(c->pos().x()), otherCy = c->yC(c->pos().y());
             thisCy *= -1; otherCy *= -1;
@@ -251,11 +279,6 @@ void Player::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 //when mouse is moving
 void Player::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-    //send informations to server
-
-
-
-
     //make line biger by moving mouse... we may add triangle
     int tmp = sqrt(event->pos().x() * event->pos().x() + event->pos().y() * event->pos().y());
     if(tmp > 100) {
@@ -268,6 +291,11 @@ void Player::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
         line->setLine(xC(0), yC(0), -(event->pos().x() - 2 * xC(0)), -(event->pos().y() - 2 * yC(0)));
     }
     changeColorOfLine(tmp);
+
+    //send informations to server
+    QString st = "1 " + QString::number(this->playerNum) + " " + QString::number(-(event->pos().x() - 2 * xC(0))) + " " + QString::number(-(event->pos().y() - 2 * yC(0))) + " ";
+    st.append(QChar(23));
+    //thread->sendMess(st);
 }
 
 //detect collisions
@@ -310,9 +338,13 @@ void Player::movePlayer(double, double)
 
 
 //when server sends drawLine Signal
-void Player::drawLine(double, double)
+void Player::drawLine(double a, double b)
 {
+    qDebug() << a << b << "in player";
+    a = abs(a - xC(this->pos().x())); b = abs(b - yC(this->pos().y()));
+    int tmp = sqrt(a * a + b * b);
 
+    changeColorOfLine(tmp);
 }
 
 //returns actual center

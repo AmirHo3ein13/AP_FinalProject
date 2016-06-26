@@ -4,7 +4,9 @@
 #
 #-------------------------------------------------
 
-QT       += core gui network
+QT  += core gui multimedia
+QT += network
+QT += multimedia multimediawidgets
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -14,26 +16,30 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    game.cpp \
     realplayer.cpp \
     player.cpp \
     circle.cpp \
     ball.cpp \
     formatation.cpp \
+    border.cpp \
+    game.cpp \
     socketthread.cpp \
-    border.cpp
+    messagedialog.cpp
 
 HEADERS  += mainwindow.h \
-    game.h \
     realplayer.h \
     player.h \
     circle.h \
     ball.h \
     formatation.h \
+    border.h \
+    game.h \
     socketthread.h \
-    border.h
+    messagedialog.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    ../Desktop/ap2/messagedialog.ui \
+    messagedialog.ui
 
 RESOURCES += \
     resources.qrc

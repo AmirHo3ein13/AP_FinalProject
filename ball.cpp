@@ -2,6 +2,7 @@
 #include "player.h"
 #include "border.h"
 #include <QDebug>
+#include <QMediaPlayer>
 
 Ball::Ball(double cX, double cY, QObject *parent) : QObject(parent), Circle(cX, cY), animation(new QPropertyAnimation(this))// change the circle r, x, y too appropriate things
 {
@@ -28,15 +29,22 @@ void Ball::setMovingBall(int)
     QList<QGraphicsItem *> l = this->collidingItems();
     for(int i = 0; i < l.size(); i++) {
         if(Border *b = dynamic_cast<Border *> (l[i])) {
+
+            //addin sounds of ball and border collision...
+            QMediaPlayer *shot = new QMediaPlayer();
+            shot->setMedia(QUrl("qrc:/sounds/p2p.flac"));
+            shot->setVolume(110);
+            shot->play();
+
             if(b->x1 == b->x2) {
                 this->vX *= -.8;
-//                this->setX(this->pos().x() + this->vX);
-                if(abs(xC(this->pos().x()) - b->x()) < this->r) {
-                    if(xC(this->pos().x()) - b->x() < 0)
-                        this->setX(this->pos().x() - abs(b->x() - this->r));
-                    else if(xC(this->pos().x() - (b->x() + 5) > 0))
-                        this->setX(this->pos().x() + abs(b->x() - this->r));
-                }
+
+//                if(abs(xC(this->pos().x()) - b->x()) < this->r) {
+//                    if(xC(this->pos().x()) - b->x() < 0)
+//                        this->setX(this->pos().x() - abs(b->x() - this->r));
+//                    else if(xC(this->pos().x() - (b->x() + 5) > 0))
+//                        this->setX(this->pos().x() + abs(b->x() - this->r));
+//                }
 
          }
             else if(b->y1 == b->y2) {
@@ -49,6 +57,13 @@ void Ball::setMovingBall(int)
             }
         }
         if(Player *c = dynamic_cast<Player *> (l[i])) {
+
+            //adding sounds of collision between ball and player...
+            QMediaPlayer *shot = new QMediaPlayer();
+            shot->setMedia(QUrl("qrc:/sounds/shot.wav"));
+            shot->setVolume(110);
+            shot->play();
+
             double thisCx = xC(this->pos().x()), thisCy = yC(this->pos().y()), otherCx = c->xC(c->pos().x()), otherCy = c->yC(c->pos().y());
             //thisCy *= -1; otherCy *= -1;
             if(thisCx - otherCx == 0) {
@@ -89,7 +104,6 @@ void Ball::setMovingBall(int)
                 this->setPos(this->pos().x() + 2 * this->vX, this->pos().y() + 2 * this->vY);
                 c->setPos(c->pos().x() + 2 * c->vX, c->pos().y() + 2 * c->vY);
                 this->startAnimaion();
-                c->animation->start();
                 c->startAnimaion();
             }
         }
@@ -110,23 +124,25 @@ void Ball::startAnimaion()
     animation->start();
 }
 
-bool Ball::collidesWithItem(QGraphicsItem *other, Qt::ItemSelectionMode mode) const
+bool Ball::collidesWithItem(QGraphicsItem *other, Qt::ItemSelectionMode mode)
 {
+    
     if (Player *b = dynamic_cast<Player *> (other)) {
         double tX = this->Circle::x, tY = this->Circle::y, oX = b->Circle::x, oY = b->Circle::y;
         double tmp = sqrt((tX - oX) * (tX - oX) + (tY - oY) * (tY - oY));
-        if(tmp <= this->r + b->r)
+        if(tmp <= this->r + 3 + b->r)
             return true;
         return false;
     }
     else if(Border *b = dynamic_cast<Border *> (other)) {
         if(b->x1 == b->x2) {
-            if(abs(this->Circle::x - b->x1) <= this->r)
+            if(this->pos().x() <= b->x1 + 100)
                 return true;
             return false;
         }
         else {
-            if(abs(this->Circle::y - b->y1) <= this->r)
+            double yy = this->Circle::y;
+            if(abs(yC(this->pos().y()) - b->y1) <= this->r + 2)
                 return true;
             return false;
         }

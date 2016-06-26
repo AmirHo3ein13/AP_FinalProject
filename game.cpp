@@ -10,13 +10,20 @@
 #include <QGraphicsPixmapItem>
 #include <iostream>
 #include <QFile>
+#include <QMediaPlayer>
+#include <QMediaPlaylist>
 
-using namespace std;
 
-Game::Game()
+Game::Game(QString player1Flag,QString player2Flag)
 {
-    qDebug() << "game constructed";
-      SocketThread *t = new SocketThread();
+
+       t = new SocketThread();
+       connect(t, SIGNAL(drawLine(int,double,double)), this, SLOT(drawLine(int,double,double)));
+       connect(t, SIGNAL(movePlayer(int,double,double)), this, SLOT(movePlayer(int,double,double)));
+       connect(t, SIGNAL(playerN(int)), this, SLOT(playerN(int)));
+       t->start();
+
+
        scene = new QGraphicsScene();
        scene->setBackgroundBrush(QImage(":/Images/fSoccer.jpg"));
 
@@ -47,8 +54,8 @@ Game::Game()
 
        scene->addItem(b);
        //creating real players...
-       RealPlayer p1(t, scene, 1, "brasil.png");
-       RealPlayer p2(t, scene, 2, "iran.png");
+       RealPlayer p1(t, scene, 1, player1Flag + ".png");
+       RealPlayer p2(t, scene, 2, player2Flag + ".png");
        scene->addItem(pm1);
        scene->addItem(pm2);
 
@@ -98,8 +105,49 @@ Game::Game()
        scene->addItem(b10);
        scene->addItem(b11);
        scene->addItem(b12);
+        qDebug() << num;
+
+        // media of game
+        QMediaPlaylist *playlist = new QMediaPlaylist();
+        playlist->addMedia(QUrl("qrc:/sounds/play.mp3"));
+        playlist->setPlaybackMode(QMediaPlaylist::Loop);
+
+        QMediaPlayer *music = new QMediaPlayer();
+        music->setPlaylist(playlist);
+        music->setVolume(50);
+        music->play();
+
+        QMediaPlayer *whistle = new QMediaPlayer();
+        whistle->setMedia(QUrl("qrc:/sounds/whistle.wav"));
+        whistle->setVolume(100);
+        whistle->play();
 
        v->show();
 
 }
+
+void Game::movePlayer(int a, double b, double c)
+{
+    if(num == 1) {
+        p2->movePlayer(a, b, c);
+    }
+    else
+        p1->movePlayer(a, b, c);
+}
+
+void Game::drawLine(int a, double b, double c)
+{
+    qDebug() << "recieving";
+    if(num == 1)
+        p2->drawLine(a, b, c);
+    else
+        p1->drawLine(a, b, c);
+}
+
+void Game::playerN(int a)
+{
+    num = a;
+}
+
+
 

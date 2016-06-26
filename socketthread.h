@@ -2,9 +2,8 @@
 #define SOCKETTHREAD_H
 
 #include <QObject>
-#include <QTcpSocket>
 #include <QThread>
-#include <QString>
+#include <QTcpSocket>
 
 class SocketThread : public QThread
 {
@@ -13,19 +12,16 @@ public:
     explicit SocketThread(QObject *parent = 0);
     void run();
     void sendMess(QString);
-
-private:
     QTcpSocket *socket;
+    QString message;
 
 signals:
-    void movePlayer(double, double);
-    void drawLine(double, double);
+    void movePlayer(int, double, double);
+    void drawLine(int, double, double);
+    void playerN(int);
 
 private slots:
     void newMessage();
-
-private:
-    QString message;
 
 public slots:
 };

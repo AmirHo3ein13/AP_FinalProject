@@ -13,8 +13,12 @@ public:
     RealPlayer(SocketThread *, QGraphicsScene *, int, QString nameOfTeam);
 
 private:
-    Player *p1, *p2, *p3, *p4, *p5;
+    Player *p[5];
     int score = 0;
+
+public:
+    void movePlayer(int, double, double);
+    void drawLine(int, double, double);
 };
 
 #endif // REALPLAYER_H

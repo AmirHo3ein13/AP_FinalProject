@@ -3,6 +3,7 @@
 
 Border::Border(double x1, double y1, double x2, double y2, QObject *parent) : QObject(parent)
 {
+
     QPen p = this->pen();
     p.setWidth(10);
     this->setPen(p);

@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QMediaPlayer>
 
 namespace Ui {
 class MainWindow;
@@ -15,7 +16,14 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+private slots:
+
+    void on_start_clicked();
+
+    void on_quit_clicked();
+
 private:
+    QMediaPlayer *music;
     Ui::MainWindow *ui;
 };
 

@@ -24,17 +24,31 @@ RealPlayer::RealPlayer(SocketThread *thread, QGraphicsScene *s, int a, QString n
 
 
 
-    p1 = new Player(x1, y1, thread, a); p1->playerNum = 1; p1->setPixmap(QPixmap(":/Images/" + nameOfTeam));
-    p2 = new Player(x2, y2, thread, a); p2->playerNum = 2; p2->setPixmap(QPixmap(":/Images/" + nameOfTeam));
-    p3 = new Player(x3, y3, thread, a); p3->playerNum = 3; p3->setPixmap(QPixmap(":/Images/" + nameOfTeam));
-    p4 = new Player(x4, y4, thread, a); p4->playerNum = 4; p4->setPixmap(QPixmap(":/Images/" + nameOfTeam));
-    p5 = new Player(x5, y5, thread, a), p5->playerNum = 5; p5->setPixmap(QPixmap(":/Images/" + nameOfTeam));
+    p[1] = new Player(x1, y1, thread, a); p[1]->playerNum = 1; p[1]->setPixmap(QPixmap(":/Images/" + nameOfTeam)); p[1]->run();
+    p[2] = new Player(x2, y2, thread, a); p[2]->playerNum = 2; p[2]->setPixmap(QPixmap(":/Images/" + nameOfTeam)); p[2]->run();
+    p[3] = new Player(x3, y3, thread, a); p[3]->playerNum = 3; p[3]->setPixmap(QPixmap(":/Images/" + nameOfTeam)); p[3]->run();
+    p[4] = new Player(x4, y4, thread, a); p[4]->playerNum = 4; p[4]->setPixmap(QPixmap(":/Images/" + nameOfTeam)); p[4]->run();
+    p[5] = new Player(x5, y5, thread, a), p[5]->playerNum = 5; p[5]->setPixmap(QPixmap(":/Images/" + nameOfTeam)); p[5]->run();
 
-    s->addItem(p1);
-    s->addItem(p2);
-    s->addItem(p3);
-    s->addItem(p4);
-    s->addItem(p5);
+    s->addItem(p[1]);
+    s->addItem(p[2]);
+    s->addItem(p[3]);
+    s->addItem(p[4]);
+    s->addItem(p[5]);
 
+}
+
+//line
+void RealPlayer::movePlayer(int a, double b, double c)
+{
+    p[a - 1]->movePlayer(b, c);
+}
+
+//move
+void RealPlayer::drawLine(int a, double b, double c)
+{
+    //qDebug() << "sending to player" << a;
+
+    p[a - 1]->drawLine(b, c);
 }
 

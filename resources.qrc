@@ -13,9 +13,18 @@
         <file>vRodR.jpeg</file>
         <file>hRodU.jpeg</file>
         <file>hRodD.jpeg</file>
+        <file>bg.png</file>
     </qresource>
     <qresource prefix="/Formatation">
         <file>FormatationFile.txt</file>
         <file>format.txt</file>
+    </qresource>
+    <qresource prefix="/sounds">
+        <file>p2p.flac</file>
+        <file>start.mp3</file>
+        <file>play.mp3</file>
+        <file>goal.wav</file>
+        <file>shot.wav</file>
+        <file>whistle.wav</file>
     </qresource>
 </RCC>

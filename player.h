@@ -10,14 +10,18 @@
 #include <cmath>
 #include "circle.h"
 #include "socketthread.h"
+#include <QThread>
 
-class Player : public QObject , public QGraphicsPixmapItem , public Circle
+class Player : public QThread , public QGraphicsPixmapItem , public Circle
 {
     Q_OBJECT
      Q_PROPERTY(int movePlayers READ movePlayers WRITE setMovePlayers)
     Q_PROPERTY(int changeX READ changeX WRITE setChangeX)
     Q_PROPERTY(int changeY READ changeY WRITE setChangeY)
 public:
+
+    void run();//this is a thread
+
     explicit Player(double, double, SocketThread *thread, int number, QObject *parent = 0);
 
     //animation for moving players
@@ -39,7 +43,9 @@ public:
     double yC(double);
     double fx, fy, vX, vY;
     void startAnimaion();
-        QPropertyAnimation *animation, *anForMovingX, *anForMovingY;
+    QPropertyAnimation *animation, *anForMovingX, *anForMovingY;
+    void movePlayer(double, double);
+    void drawLine(double, double);
 
 private:
     int width, height;
@@ -47,6 +53,7 @@ private:
     QPen p1, p2, p3;
     void changeColorOfLine(int tmp);
     int finalDesX, finalDexY, number;
+    SocketThread *thread;
 
     //sin and cos for collision
     double coss(double a) {
@@ -63,8 +70,6 @@ private:
 signals:
 
 private slots:
-    void movePlayer(double, double);
-    void drawLine(double, double);
 
 public slots:
 };

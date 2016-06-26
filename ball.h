@@ -22,7 +22,7 @@ public:
     double vX, vY, fX, fY;
     QPropertyAnimation *animation;
     void startAnimaion();
-    bool collidesWithItem(QGraphicsItem *other, Qt::ItemSelectionMode mode) const;
+   bool collidesWithItem( QGraphicsItem *other, Qt::ItemSelectionMode mode);
 
 private:
     //sin and cos for collision

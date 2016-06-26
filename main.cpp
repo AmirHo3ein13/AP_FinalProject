@@ -5,7 +5,8 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    Game g;
+    MainWindow *mainwindow = new MainWindow;
+    mainwindow->show();
 
     return a.exec();
 }
