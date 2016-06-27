@@ -129,7 +129,7 @@ void Ball::setMoving(int)
             shot->play();
 
             double thisCx = xC(this->pos().x()), thisCy = yC(this->pos().y()), otherCx = c->xC(c->pos().x()), otherCy = c->yC(c->pos().y());
-            //thisCy *= -1; otherCy *= -1;
+            thisCy *= -1; otherCy *= -1;
             if(thisCx - otherCx == 0) {
                 double tmp = this->vY;
                 this->vY = c->vY;
@@ -152,7 +152,7 @@ void Ball::setMoving(int)
                 double fOnMC = picOfVxOnMC + picOfVyOnMC, fOnMCN = picOfVxOnMCN + picOfVyOnMCN, sOnMC = sPicOfVxONMC + sPicOfVyOnMC, sOnMCN = sPicofVxOnMCN + sPicOfVyOnMCN;
                 double tmp = fOnMC;
                 fOnMC = sOnMC;
-                sOnMC = tmp / 2;
+                sOnMC = tmp;
                 if(mCenters < 0) {
                     double fVx1 = fOnMCN * coss(mCNorm), fVx2 = fOnMC * coss(mCenters) * -1, fVy1 = fOnMCN * sinn(mCNorm) * -1, fVy2 = fOnMC * sinn(mCenters) * -1;
                     this->vX = fVx1 + fVx2; this->vY = fVy1 + fVy2;
@@ -165,6 +165,8 @@ void Ball::setMoving(int)
                    double sVx1 = sOnMCN * coss(mCNorm) * -1, sVx2 = sOnMC * coss(mCenters), sVy1 = sOnMCN * sinn(mCNorm) * -1, sVy2 = sOnMC * sinn(mCenters) * -1;
                    c->vX = sVx1 + sVx2; c->vY = sVy1 + sVy2;
                 }
+                //this->setPos(this->pos().x() + this->vX, this->pos().y() + this->vY);
+                //c->setPos(c->pos().x() + c->vX, c->pos().y() + c->vY);
                 this->startAnimaion();
                 c->startAnimaion();
             }
@@ -177,11 +179,11 @@ void Ball::startAnimaion()
 {
     //function for starting animation of Player
     double tmp = sqrt(vX * vX + vY * vY);
-    fX = abs(vX) / (tmp * 9), fY = abs(vY) / (tmp * 9);
+    fX = abs(vX) / (tmp * 10), fY = abs(vY) / (tmp * 10);
     animation->pause();
     animation->setStartValue(vX);
     animation->setEndValue(0);
-    animation->setDuration(15000);
+    animation->setDuration(10000);
     animation->start();
 }
 
@@ -193,8 +195,7 @@ bool Ball::collidesWithItem(const QGraphicsItem *other, Qt::ItemSelectionMode mo
     if (const Player *b = dynamic_cast<const Player *> (other)) {
         double tX = this->pos().x() + 15, tY = this->pos().y() + 15, oX = b->pos().x() + 35, oY = b->pos().y() + 35;
         double tmp = sqrt((tX - oX) * (tX - oX) + (tY - oY) * (tY - oY));
-        if(tmp <= 55) {
-                        qDebug() << tmp;
+        if(tmp <= 50) {
             return true;
         }
         return false;

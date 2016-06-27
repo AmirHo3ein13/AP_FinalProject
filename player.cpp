@@ -192,8 +192,8 @@ void Player::setMove(int)
                 }
                 double fOnMC = picOfVxOnMC + picOfVyOnMC, fOnMCN = picOfVxOnMCN + picOfVyOnMCN, sOnMC = sPicOfVxONMC + sPicOfVyOnMC, sOnMCN = sPicofVxOnMCN + sPicOfVyOnMCN;
                 double tmp = fOnMC;
-                fOnMC = .9 * sOnMC;
-                sOnMC = .9 * tmp;
+                fOnMC = sOnMC;
+                sOnMC = tmp;
                 if(mCenters < 0) {
                     double fVx1 = fOnMCN * coss(mCNorm), fVx2 = fOnMC * coss(mCenters) * -1, fVy1 = fOnMCN * sinn(mCNorm) * -1, fVy2 = fOnMC * sinn(mCenters) * -1;
                     this->vX = fVx1 + fVx2; this->vY = fVy1 + fVy2;
@@ -241,7 +241,7 @@ void Player::setMove(int)
                 }
                 double fOnMC = picOfVxOnMC + picOfVyOnMC, fOnMCN = picOfVxOnMCN + picOfVyOnMCN, sOnMC = sPicOfVxONMC + sPicOfVyOnMC, sOnMCN = sPicofVxOnMCN + sPicOfVyOnMCN;
                 double tmp = fOnMC;
-                fOnMC = sOnMC / 2;
+                fOnMC = sOnMC;
                 sOnMC = tmp;
                 if(mCenters < 0) {
                     double fVx1 = fOnMCN * coss(mCNorm), fVx2 = fOnMC * coss(mCenters) * -1, fVy1 = fOnMCN * sinn(mCNorm) * -1, fVy2 = fOnMC * sinn(mCenters) * -1;
@@ -288,12 +288,12 @@ void Player::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
         this->scene()->removeItem(line);
 
         //settin speed
-        vX = -(event->pos().x() - this->xC(0)) / 4; // /7 is experiential
-        vY = -(event->pos().y() - this->yC(0)) / 4;
+        vX = -(event->pos().x() - this->xC(0)) / 3; // /7 is experiential
+        vY = -(event->pos().y() - this->yC(0)) / 3;
         double max = sqrt(vX * vX + vY * vY);
-        if(max > 14) {
-            vX = 14 * vX / max;
-            vY = 14 * vY / max;
+        if(max > 12) {
+            vX = 12 * vX / max;
+            vY = 12 * vY / max;
         }
         *changeTurn = 9;
         startAnimaion();
@@ -334,7 +334,7 @@ bool Player::collidesWithItem(const QGraphicsItem *other, Qt::ItemSelectionMode 
     if(const Ball *b = dynamic_cast<const Ball *> (other)) {
         double tX = this->pos().x() + 35, tY = this->pos().y() + 35, oX = b->pos().x() + 15, oY = b->pos().y() + 15;
         double tmp = sqrt((tX - oX) * (tX - oX) + (tY - oY) * (tY - oY));
-        if(tmp <= 55) {
+        if(tmp <= 50) {
             return true;
         }
         return false;
@@ -342,7 +342,7 @@ bool Player::collidesWithItem(const QGraphicsItem *other, Qt::ItemSelectionMode 
     else if (const Player *b = dynamic_cast<const Player *> (other)) {
         double tX = this->pos().x(), tY = this->pos().y(), oX = b->pos().x(), oY = b->pos().y();
         double tmp = sqrt((tX - oX) * (tX - oX) + (tY - oY) * (tY - oY));
-        if(tmp <= 75)
+        if(tmp <= 70)
             return true;
         return false;
     }
@@ -402,11 +402,11 @@ void Player::startAnimaion()
 {
     //function for starting animation of Player
     double tmp = sqrt(vX * vX + vY * vY);
-    fx = abs(vX) / (tmp * 9), fy = abs(vY) / (tmp * 9);
+    fx = abs(vX) / (tmp * 10), fy = abs(vY) / (tmp * 10);
     animation->pause();
     animation->setStartValue(vX);
     animation->setEndValue(0);
-    animation->setDuration(15000);
+    animation->setDuration(10000);
     animation->start();
 
 }
