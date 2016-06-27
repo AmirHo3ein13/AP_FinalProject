@@ -5,6 +5,7 @@
 #include <QFile>
 #include <sstream>
 #include <cstring>
+#include <QTimer>
 
 using namespace std;
 
@@ -12,6 +13,7 @@ using namespace std;
 
 RealPlayer::RealPlayer(SocketThread *thread, QGraphicsScene *s, int a, QString nameOfTeam)
 {
+
     //let the player select his/her team
     QFile file(":/Formatation/format.txt");
     file.open(QIODevice::ReadOnly);
@@ -41,6 +43,12 @@ RealPlayer::RealPlayer(SocketThread *thread, QGraphicsScene *s, int a, QString n
 
 }
 
+void RealPlayer::change(bool b)
+{
+    for(int i = 1; i < 6; i++)
+        p[i]->changable = b;
+}
+
 //line
 void RealPlayer::movePlayer(int a, double b, double c)
 {
@@ -59,4 +67,3 @@ void RealPlayer::rePos()
     for(int i = 1; i < 6; i++)
         p[i]->rePositioning();
 }
-

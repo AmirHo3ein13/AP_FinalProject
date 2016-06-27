@@ -14,9 +14,10 @@
 #include <QMediaPlaylist>
 #include <QLabel>
 #include <QFont>
+#include <QProgressBar>
 
 
-Game::Game(QString player1Flag,QString player2Flag)
+Game::Game(QTimer *timer, QString player1Flag,QString player2Flag)
 {
 
 //       t = new SocketThread();
@@ -53,10 +54,10 @@ Game::Game(QString player1Flag,QString player2Flag)
            VrR2->setPixmap(QPixmap(":/Images/vRodR.jpeg"));
 
        //creating real players...
-       RealPlayer *p1 = new RealPlayer (t, scene, 1, player1Flag + ".png");
-       RealPlayer *p2 = new RealPlayer (t, scene, 2, player2Flag + ".png");
-       //p1->isMyTurn = true;
-       //p2->isMyTurn = false;
+       p1 = new RealPlayer (t, scene, 1, player1Flag + ".png");
+       p2 = new RealPlayer (t, scene, 2, player2Flag + ".png");
+       p1->change(true); p2->change(false);
+       p1->isMyTurn = true; p2->isMyTurn = false;
        scene->addItem(pm1);
        scene->addItem(pm2);
 
@@ -142,10 +143,30 @@ Game::Game(QString player1Flag,QString player2Flag)
         q2->setText("0");
         scene->addWidget(q1);
         scene->addWidget(q2);
-        timer = new QTimer();
-        timer->setInterval(10000);
-        timer->start();
+
+        bar1 = new QProgressBar;
+        bar2 = new QProgressBar;
+        bar1->setGeometry(0, 50, 20, 150);
+        bar2->setGeometry(1183, 50, 20, 150);
+        bar1->setMaximum(100);
+        bar2->setMaximum(100);
+        bar1->setFixedWidth(100);
+        bar2->setFixedHeight(30);
+        bar2->setFixedWidth(100);
+        bar1->setFixedHeight(30);
+        bar1->setValue(0);
+        bar2->setValue(0);
+        scene->addWidget(bar1);
+        scene->addWidget(bar2);
+        for(int i = 1; i < 6; i++) {
+            p1->p[i]->changeTurn = &chan;
+            p2->p[i]->changeTurn = &chan;
+        }
+        this->timer = timer;
+        connect(timer, SIGNAL(timeout()), b, SLOT(raise()));
         connect(timer, SIGNAL(timeout()), this, SLOT(setTurn()));
+        timer->start(1000);
+
         v->show();
 
 }
@@ -153,13 +174,27 @@ Game::Game(QString player1Flag,QString player2Flag)
 //changes the turn of players
 void Game::setTurn()
 {
-    if(p1->isMyTurn == true) {
-        p1->isMyTurn = false;
-        p2->isMyTurn = true;
+
+    chan++;
+    if(!(chan % 10)) {
+        if(p1->isMyTurn == true) {
+            p1->isMyTurn = false;
+            p2->isMyTurn = true;
+            p1->change(false); p2->change(true);
+        }
+        else {
+            p2->isMyTurn = false;
+            p1->isMyTurn = true;
+            p2->change(false); p1->change(true);
+        }
     }
-    else {
-        p2->isMyTurn = false;
-        p1->isMyTurn = true;
+    if(p1->isMyTurn) {
+        bar1->setValue((chan % 10) * 10);
+        bar2->setValue(0);
+    }
+    else if(p2->isMyTurn) {
+        bar1->setValue(0);
+        bar2->setValue((chan % 10) * 10);
     }
 }
 

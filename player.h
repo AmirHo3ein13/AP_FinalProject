@@ -20,7 +20,7 @@ class Player : public QObject, public QGraphicsPixmapItem , public Circle
     Q_PROPERTY(int changeY READ changeY WRITE setChangeY)
 public:
 
-    explicit Player(double, double, SocketThread *thread, int number, QObject *parent = 0);
+    explicit Player(double, double, SocketThread *thread, int number);
 
     //animation for moving players
     int changeX(){return this->pos().x();};
@@ -45,7 +45,8 @@ public:
     void movePlayer(double, double);
     void drawLine(double, double);
     void rePositioning();
-    int finalDesX, finalDexY, number;
+    int finalDesX, finalDexY, number, *changeTurn;
+    bool changable;
 
 private:
     int width, height;
@@ -53,6 +54,7 @@ private:
     QPen p1, p2, p3;
     void changeColorOfLine(int tmp);
     SocketThread *thread;
+
 
     //sin and cos for collision
     double coss(double a) {
@@ -66,6 +68,7 @@ private:
 
 
 signals:
+
 
 private slots:
 

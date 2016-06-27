@@ -8,12 +8,14 @@
 #include <QObject>
 #include <QTimer>
 #include <QGraphicsScene>
+#include <QProgressBar>
 
 class Game : public QObject
 {
     Q_OBJECT
    public:
-       explicit Game(QString,QString);
+       explicit Game(QTimer *, QString,QString);
+       int chan = 0;
    private:
        QTimer *timer;
        RealPlayer *p1, *p2;
@@ -21,6 +23,7 @@ class Game : public QObject
        Ball *ball;
        int num;
        SocketThread *t;
+       QProgressBar *bar1, *bar2;
 
    private slots:
        void setTurn();

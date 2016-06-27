@@ -16,8 +16,9 @@
 using namespace std;
 
 
-Player::Player(double cxX, double cyY, SocketThread *thread, int number, QObject *parent) : Circle(cxX, cyY), animation(new QPropertyAnimation(this)) //change the circle r, x, y too
+Player::Player(double cxX, double cyY, SocketThread *thread, int number) : Circle(cxX, cyY), animation(new QPropertyAnimation(this)) //change the circle r, x, y too
 {
+
     this->thread = thread;
     this->number = number;
     this->vX = this->vY = 0;
@@ -103,9 +104,11 @@ void Player::setMove(int)
 {
     //add some collision check and ...
     this->setPos(this->pos().x() + vX, this->pos().y() + vY);
+
     vX > 0 ? vX -= fx : vX += fx;
     vY > 0 ? vY -= fy : vY += fy;
     if(abs(vX) < .2 && abs(vY) < .2) {
+
         animation->stop();
         return;
     }
@@ -254,56 +257,67 @@ void Player::setMove(int)
 //when mouse press on player
 void Player::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    //setting line default color
-    line->setPen(p1);
-    line->setLine(xC(0), yC(0), xC(0), yC(0));
-    this->scene()->addItem(line);
-    line->setParentItem(this);
-    line->setVisible(true);
+    if(changable) {
+        //setting line default color
+        line->setPen(p1);
+        line->setLine(xC(0), yC(0), xC(0), yC(0));
+        this->scene()->addItem(line);
+        line->setParentItem(this);
+        line->setVisible(true);
+    }
 }
 
 //when mouse release
 void Player::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-    //send informations to server
+    if(changable) {
+        //send informations to server
 
 
 
-    //set line invisible
-    line->setVisible(false);
-    this->scene()->removeItem(line);
+        //set line invisible
+        line->setVisible(false);
+        this->scene()->removeItem(line);
 
-    //settin speed
-    vX = -(event->pos().x() - this->xC(0)) / 7; // /2 is experiential
-    vY = -(event->pos().y() - this->yC(0)) / 7;
-    double max = sqrt(vX * vX + vY * vY);
-    if(max > 10) {
-        vX = 10 * vX / max;
-        vY = 10 * vY / max;
+        //settin speed
+        vX = -(event->pos().x() - this->xC(0)) / 7; // /7 is experiential
+        vY = -(event->pos().y() - this->yC(0)) / 7;
+        double max = sqrt(vX * vX + vY * vY);
+        if(max > 10) {
+            vX = 10 * vX / max;
+            vY = 10 * vY / max;
+        }
+        *changeTurn = 9;
+        startAnimaion();
     }
-    startAnimaion();
 }
 
 //when mouse is moving
 void Player::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-    //make line biger by moving mouse... we may add triangle
-    int tmp = sqrt(event->pos().x() * event->pos().x() + event->pos().y() * event->pos().y());
-    if(tmp > 100) {
-       double xx = -(event->pos().x() - 2 * xC(0)),yy = -(event->pos().y() - 2 * yC(0));
-       xx = xC(0) - ((xC(0) - xx) * 100. / tmp);
-       yy = yC(0) - ((yC(0) - yy) * 100. / tmp);
-       line->setLine(xC(0), yC(0), xx, yy);
+    if(changable) {
+        //make line biger by moving mouse... we may add triangle
+        int tmp = sqrt(event->pos().x() * event->pos().x() + event->pos().y() * event->pos().y());
+        if(tmp > 100) {
+           double xx = -(event->pos().x() - 2 * xC(0)),yy = -(event->pos().y() - 2 * yC(0));
+           xx = xC(0) - ((xC(0) - xx) * 100. / tmp);
+           yy = yC(0) - ((yC(0) - yy) * 100. / tmp);
+           line->setLine(xC(0), yC(0), xx, yy);
+        }
+        else {
+            line->setLine(xC(0), yC(0), -(event->pos().x() - 2 * xC(0)), -(event->pos().y() - 2 * yC(0)));
+        }
+        changeColorOfLine(tmp);
+
+        //send informations to server
+        QString st = "1 " + QString::number(this->playerNum) + " " + QString::number(-(event->pos().x() - 2 * xC(0))) + " " + QString::number(-(event->pos().y() - 2 * yC(0))) + " ";
+        st.append(QChar(23));
+        //thread->sendMess(st);
     }
     else {
-        line->setLine(xC(0), yC(0), -(event->pos().x() - 2 * xC(0)), -(event->pos().y() - 2 * yC(0)));
+        line->setVisible(false);
+        this->scene()->removeItem(line);
     }
-    changeColorOfLine(tmp);
-
-    //send informations to server
-    QString st = "1 " + QString::number(this->playerNum) + " " + QString::number(-(event->pos().x() - 2 * xC(0))) + " " + QString::number(-(event->pos().y() - 2 * yC(0))) + " ";
-    st.append(QChar(23));
-    //thread->sendMess(st);
 }
 
 //detect collisions

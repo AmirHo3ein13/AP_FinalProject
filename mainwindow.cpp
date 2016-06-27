@@ -5,10 +5,11 @@
 #include <QMediaPlaylist>
 #include "messagedialog.h"
 
-MainWindow::MainWindow(QWidget *parent) :
+MainWindow::MainWindow(QTimer *t, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
+    this->t = t;
     ui->setupUi(this);
         QPixmap bkgnd(":/Images/bg.png");
         bkgnd = bkgnd.scaled(this->size(), Qt::IgnoreAspectRatio);
@@ -76,7 +77,7 @@ void MainWindow::on_start_clicked()
     }
     else
     {
-        Game g(flag1,flag2);
+        Game *g = new Game(t, flag1,flag2);
         music->stop();
         this->close();
     }
