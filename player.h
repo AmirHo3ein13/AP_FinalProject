@@ -15,7 +15,7 @@
 class Player : public QThread , public QGraphicsPixmapItem , public Circle
 {
     Q_OBJECT
-     Q_PROPERTY(int movePlayers READ movePlayers WRITE setMovePlayers)
+     Q_PROPERTY(int movePlayers READ movePlayers WRITE setMove)
     Q_PROPERTY(int changeX READ changeX WRITE setChangeX)
     Q_PROPERTY(int changeY READ changeY WRITE setChangeY)
 public:
@@ -31,7 +31,7 @@ public:
     void setChangeY(int);
 
     int movePlayers(){return 0;};
-    void setMovePlayers(int);
+    void setMove(int);
     int playerNum;
     //mouse events
     void mousePressEvent(QGraphicsSceneMouseEvent *);
@@ -46,13 +46,14 @@ public:
     QPropertyAnimation *animation, *anForMovingX, *anForMovingY;
     void movePlayer(double, double);
     void drawLine(double, double);
+    void rePositioning();
+    int finalDesX, finalDexY, number;
 
 private:
     int width, height;
     QGraphicsLineItem *line;
     QPen p1, p2, p3;
     void changeColorOfLine(int tmp);
-    int finalDesX, finalDexY, number;
     SocketThread *thread;
 
     //sin and cos for collision
@@ -64,7 +65,6 @@ private:
         double tmp = coss(a);
         return sqrt(1 - tmp * tmp);
     }
-    void rePositioning();
 
 
 signals:

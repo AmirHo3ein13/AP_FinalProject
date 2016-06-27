@@ -12,6 +12,8 @@
 #include <QFile>
 #include <QMediaPlayer>
 #include <QMediaPlaylist>
+#include <QLabel>
+#include <QFont>
 
 
 Game::Game(QString player1Flag,QString player2Flag)
@@ -32,8 +34,6 @@ Game::Game(QString player1Flag,QString player2Flag)
        v->setFixedSize(1285, 685);
        scene->setSceneRect(0, 0, 1280, 680);
 
-       //creating ball
-       Ball *b = new Ball(639.5, 340);
 
        //creating players & goals
        QGraphicsPixmapItem *pm1 = new QGraphicsPixmapItem(),*pm2 = new QGraphicsPixmapItem();
@@ -52,12 +52,19 @@ Game::Game(QString player1Flag,QString player2Flag)
            VrR1->setPixmap(QPixmap(":/Images/vRodR.jpeg"));
            VrR2->setPixmap(QPixmap(":/Images/vRodR.jpeg"));
 
-       scene->addItem(b);
        //creating real players...
-       RealPlayer p1(t, scene, 1, player1Flag + ".png");
-       RealPlayer p2(t, scene, 2, player2Flag + ".png");
+       RealPlayer *p1 = new RealPlayer (t, scene, 1, player1Flag + ".png");
+       RealPlayer *p2 = new RealPlayer (t, scene, 2, player2Flag + ".png");
+       //p1->isMyTurn = true;
+       //p2->isMyTurn = false;
        scene->addItem(pm1);
        scene->addItem(pm2);
+
+       //creating ball
+       QLabel *q1 = new QLabel, *q2 = new QLabel;
+       Ball *b = new Ball(p1, p2, q1, q2, 639.5, 340);
+       scene->addItem(b);
+
 
        //creating borders
        Border *b1 = new Border(105, 6, 1175, 6), *b2 = new Border(105, 674, 1175, 674), *b3 = new Border(105, 6, 105, 226), *b4 = new Border(105, 458, 105, 674), *b5 = new Border(1175, 6, 1175, 226),
@@ -105,7 +112,6 @@ Game::Game(QString player1Flag,QString player2Flag)
        scene->addItem(b10);
        scene->addItem(b11);
        scene->addItem(b12);
-        qDebug() << num;
 
         // media of game
         QMediaPlaylist *playlist = new QMediaPlaylist();
@@ -122,8 +128,39 @@ Game::Game(QString player1Flag,QString player2Flag)
         whistle->setVolume(100);
         whistle->play();
 
-       v->show();
+        //adding scores of players
+        q2->setGeometry(1182, 0, 100, 50);
+        q1->setGeometry(0, 0, 100, 50);
+        q1->setText("0");
+        QFont f = q1->font();
+        f.setBold(true);
+        f.setPointSize(25);
+        q1->setFont(f);
+        q1->setAlignment(Qt::AlignHCenter);
+        q2->setFont(f);
+        q2->setAlignment(Qt::AlignHCenter);
+        q2->setText("0");
+        scene->addWidget(q1);
+        scene->addWidget(q2);
+        timer = new QTimer();
+        timer->setInterval(10000);
+        timer->start();
+        connect(timer, SIGNAL(timeout()), this, SLOT(setTurn()));
+        v->show();
 
+}
+
+//changes the turn of players
+void Game::setTurn()
+{
+    if(p1->isMyTurn == true) {
+        p1->isMyTurn = false;
+        p2->isMyTurn = true;
+    }
+    else {
+        p2->isMyTurn = false;
+        p1->isMyTurn = true;
+    }
 }
 
 void Game::movePlayer(int a, double b, double c)
@@ -137,7 +174,6 @@ void Game::movePlayer(int a, double b, double c)
 
 void Game::drawLine(int a, double b, double c)
 {
-    qDebug() << "recieving";
     if(num == 1)
         p2->drawLine(a, b, c);
     else
@@ -148,6 +184,7 @@ void Game::playerN(int a)
 {
     num = a;
 }
+
 
 
 

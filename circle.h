@@ -9,6 +9,7 @@ public:
 
 public:
     double x, y;
+    virtual void setMove(int) {};
 
 };
 

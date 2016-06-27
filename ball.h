@@ -6,16 +6,18 @@
 #include "circle.h"
 #include <QPropertyAnimation>
 #include <cmath>
+#include <QLabel>
+#include "realplayer.h"
 
 class Ball : public QObject, public QGraphicsPixmapItem, public Circle
 {
     Q_OBJECT
-    Q_PROPERTY(int movingBall READ movingBall WRITE setMovingBall)
+    Q_PROPERTY(int movingBall READ movingBall WRITE setMoving)
 
 public:
-    explicit Ball(double, double, QObject *parent = 0);
+    explicit Ball(RealPlayer *p1, RealPlayer *p2,QLabel *l1, QLabel *l2, double, double, QObject *parent = 0);
     int movingBall(){};
-    void setMovingBall(int);
+    void setMoving(int);
     double r;
     double xC(double){return this->pos().x() + 15;}
     double yC(double){return this->pos().y() + 15;}
@@ -34,6 +36,9 @@ private:
         double tmp = coss(a);
         return sqrt(1 - tmp * tmp);
     }
+
+    QLabel *l1, *l2;
+    RealPlayer *p1, *p2;
 
 
 signals:

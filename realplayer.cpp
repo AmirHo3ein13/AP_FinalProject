@@ -8,6 +8,8 @@
 
 using namespace std;
 
+//real player has 5 player,,,
+
 RealPlayer::RealPlayer(SocketThread *thread, QGraphicsScene *s, int a, QString nameOfTeam)
 {
     //let the player select his team
@@ -16,7 +18,7 @@ RealPlayer::RealPlayer(SocketThread *thread, QGraphicsScene *s, int a, QString n
     QString str = file.readLine();
     string st = str.toStdString();
     stringstream ss(st);
-    int x1, y1, x2, y2, x3, y3, x4, y4, x5, y5;
+
     if(a == 1)
         ss >> x1 >> y1 >> x2 >> y2 >> x3 >> y3 >> x4 >> y4 >> x5 >> y5;
     else
@@ -35,6 +37,7 @@ RealPlayer::RealPlayer(SocketThread *thread, QGraphicsScene *s, int a, QString n
     s->addItem(p[3]);
     s->addItem(p[4]);
     s->addItem(p[5]);
+    //rePos();
 
 }
 
@@ -47,8 +50,16 @@ void RealPlayer::movePlayer(int a, double b, double c)
 //move
 void RealPlayer::drawLine(int a, double b, double c)
 {
-    //qDebug() << "sending to player" << a;
 
     p[a - 1]->drawLine(b, c);
+}
+
+void RealPlayer::rePos()
+{
+     p[0]->setPos(x1, y1);
+        p[1]->setPos(x2, y2);
+        p[2]->setPos(x3, y3);
+        p[3]->setPos(x4, y4);
+        p[4]->setPos(x5, y5);
 }
 

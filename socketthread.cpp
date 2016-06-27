@@ -18,7 +18,6 @@ void SocketThread::run()
 
 void SocketThread::sendMess(QString s)
 {
-    //qDebug() << "sending";
     s.append(QChar(23));
     socket->write(s.toLocal8Bit());
 }
@@ -32,7 +31,6 @@ void SocketThread::newMessage() {
         message = l.takeLast();
         for(int i = 0; i < l.size();i++) {
             string tmpS = l[i].toStdString();
-            qDebug() << l[i];
             stringstream stream(tmpS);
             int a, num;
             stream >> a;

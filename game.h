@@ -23,10 +23,10 @@ class Game : public QObject
        SocketThread *t;
 
    private slots:
+       void setTurn();
        void movePlayer(int, double, double);
        void drawLine(int, double, double);
        void playerN(int);
-
 
        //QTcpSocket with thread...
        //add appropriate lines...

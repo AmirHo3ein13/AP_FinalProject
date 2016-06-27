@@ -10,9 +10,11 @@
 #include <stdlib.h>
 #include <cmath>
 #include <QMediaPlayer>
+#include "realplayer.h"
 
 using namespace std;
 
+//this function is a thread so it overwrite the run function
 void Player::run()
 {
 
@@ -20,7 +22,6 @@ void Player::run()
 
 Player::Player(double cxX, double cyY, SocketThread *thread, int number, QObject *parent) : Circle(cxX, cyY), animation(new QPropertyAnimation(this)) //change the circle r, x, y too
 {
-
     this->thread = thread;
     this->number = number;
     this->vX = this->vY = 0;
@@ -56,6 +57,7 @@ Player::Player(double cxX, double cyY, SocketThread *thread, int number, QObject
 
 }
 
+//this func is for changing coordinates for QPropertyAnimation
 void Player::setChangeX(int)
 {
     if(this->pos().x() - this->finalDesX > 0) {
@@ -76,6 +78,7 @@ void Player::setChangeX(int)
     }
 }
 
+//this func changes the coordinate for QPropertyAnimation
 void Player::setChangeY(int)
 {
     if(this->pos().y() - this->finalDexY > 0) {
@@ -98,7 +101,7 @@ void Player::setChangeY(int)
 
 //this is for moving circle and checking collisions of circle
 //chckin collision between player and ball, player and line
-void Player::setMovePlayers(int)
+void Player::setMove(int)
 {
     //add some collision check and ...
     this->setPos(this->pos().x() + vX, this->pos().y() + vY);
@@ -154,16 +157,16 @@ void Player::setMovePlayers(int)
                    this->vX = fVx1 + fVx2; this->vY = fVy1 + fVy2;
                    double sVx1 = sOnMCN * coss(mCNorm) * -1, sVx2 = sOnMC * coss(mCenters), sVy1 = sOnMCN * sinn(mCNorm) * -1, sVy2 = sOnMC * sinn(mCenters) * -1;
                    c->vX = sVx1 + sVx2; c->vY = sVy1 + sVy2;
-                }                this->setPos(this->pos().x() + 2 * this->vX, this->pos().y() + 2 * this->vY);
+                }
+                this->setPos(this->pos().x() + 3 * this->vX, this->pos().y() + 3 * this->vY);
                 c->setPos(c->pos().x() + 2 * c->vX, c->pos().y() + 2 * c->vY);
                 this->startAnimaion();
                 c->startAnimaion();
             }
         }
-        else if(Border *b = dynamic_cast<Border *> (l[i])) {
+        if(Border *b = dynamic_cast<Border *> (l[i])) {
 
-
-            //adding sound of collision between player and borders...
+            //addin sounds of ball and border collision...
             QMediaPlayer *shot = new QMediaPlayer();
             shot->setMedia(QUrl("qrc:/sounds/p2p.flac"));
             shot->setVolume(110);
@@ -171,24 +174,30 @@ void Player::setMovePlayers(int)
 
             if(b->x1 == b->x2) {
                 this->vX *= -.8;
-//                this->setX(this->pos().x() + this->vX);
-                if(abs(xC(this->pos().x()) - b->x()) < this->r) {
-                    if(xC(this->pos().x()) - b->x() < 0)
-                        this->setX(this->pos().x() - abs(b->x() - this->r));
-                    else if(xC(this->pos().x() - (b->x() + 5) > 0))
-                        this->setX(this->pos().x() + abs(b->x() - this->r));
-                }
+                this->setPos(this->pos().x() + 2 * this->vX, this->pos().y() + 2 * this->vY);
+
+//                if(abs(xC(this->pos().x()) - b->x()) < this->r) {
+//                    if(xC(this->pos().x()) - b->x() < 0)
+//                        this->setX(this->pos().x() - abs(b->x() - this->r));
+//                    else if(xC(this->pos().x() - (b->x() + 5) > 0))
+//                        this->setX(this->pos().x() + abs(b->x() - this->r));
+//                }
 
          }
-            else if(b->y1 == b->y2) {
-                this->vY *= -.8;
-                if(this->pos().y() < 6)
-                    this->setY(6);
-                if(this->pos().y() + this->r * 2 > 674)
-                    this->setY(this->pos().y()- this->r * 2);
-                this->setY(this->pos().y() + this->vY);
+            //else if(b->y1 == b->y2) {
+            else if(this->pos().y() <= 10 || this->pos().y() + this->r * 2 >= 674) {
+                this->vY *= -.6;
+                this->setPos(this->pos().x() + 2 * this->vX, this->pos().y() + 2 * this->vY);
+                if(this->pos().y() < 10)
+                    this->setY(10);
+                else if(this->pos().y() > 674 - this->r * 2)
+                    this->setY(674);
+//                if(this->pos().y() < 6)
+//                    this->setY(6);
+//                if(this->pos().y() + this->r * 2 > 674)
+//                    this->setY(this->pos().y()- this->r * 2);
+//                this->setY(this->pos().y() + this->vY);
             }
-
         }
         else if(Ball *c = dynamic_cast<Ball *> (l[i])) {
 
@@ -235,7 +244,7 @@ void Player::setMovePlayers(int)
                    c->vX = sVx1 + sVx2; c->vY = sVy1 + sVy2;
                 }
                 this->setPos(this->pos().x() + 2 * this->vX, this->pos().y() + 2 * this->vY);
-                c->setPos(c->pos().x() + 2 * c->vX, c->pos().y() + 2 * c->vY);
+                c->setPos(c->pos().x() + 3 * c->vX, c->pos().y() + 3 * c->vY);
                 this->startAnimaion();
                 c->animation->start();
                 c->startAnimaion();
@@ -261,17 +270,18 @@ void Player::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     //send informations to server
 
 
+
     //set line invisible
     line->setVisible(false);
     this->scene()->removeItem(line);
 
     //settin speed
-    vX = -(event->pos().x() - this->xC(0)) / 4; // /2 is experiential
-    vY = -(event->pos().y() - this->yC(0)) / 4;
+    vX = -(event->pos().x() - this->xC(0)) / 7; // /2 is experiential
+    vY = -(event->pos().y() - this->yC(0)) / 7;
     double max = sqrt(vX * vX + vY * vY);
-    if(max > 19) {
-        vX = 19 * vX / max;
-        vY = 19 * vY / max;
+    if(max > 10) {
+        vX = 10 * vX / max;
+        vY = 10 * vY / max;
     }
     startAnimaion();
 }
@@ -340,7 +350,6 @@ void Player::movePlayer(double, double)
 //when server sends drawLine Signal
 void Player::drawLine(double a, double b)
 {
-    qDebug() << a << b << "in player";
     a = abs(a - xC(this->pos().x())); b = abs(b - yC(this->pos().y()));
     int tmp = sqrt(a * a + b * b);
 
@@ -369,6 +378,7 @@ void Player::changeColorOfLine(int tmp)
     }
 }
 
+//animation of starting...
 void Player::rePositioning()
 {
     anForMovingX = new QPropertyAnimation(this); anForMovingY = new QPropertyAnimation(this);
@@ -385,11 +395,11 @@ void Player::startAnimaion()
 {
     //function for starting animation of Player
     double tmp = sqrt(vX * vX + vY * vY);
-    fx = abs(vX) / (tmp * 6), fy = abs(vY) / (tmp * 6);
+    fx = abs(vX) / (tmp * 9), fy = abs(vY) / (tmp * 9);
     animation->pause();
     animation->setStartValue(vX);
     animation->setEndValue(0);
-    animation->setDuration(2000000);
+    animation->setDuration(15000);
     animation->start();
-    qDebug() << this->number;
+
 }
