@@ -13,6 +13,8 @@ class Ball : public QObject, public QGraphicsPixmapItem, public Circle
 {
     Q_OBJECT
     Q_PROPERTY(int movingBall READ movingBall WRITE setMoving)
+    Q_PROPERTY(int changeX READ changeX WRITE setChangeX)
+    Q_PROPERTY(int changeY READ changeY WRITE setChangeY)
 
 public:
     explicit Ball(RealPlayer *p1, RealPlayer *p2,QLabel *l1, QLabel *l2, double, double, QObject *parent = 0);
@@ -22,11 +24,18 @@ public:
     double xC(double){return this->pos().x() + 15;}
     double yC(double){return this->pos().y() + 15;}
     double vX, vY, fX, fY;
-    QPropertyAnimation *animation;
+    QPropertyAnimation *animation, *anForMovingX, *anForMovingY;
     void startAnimaion();
-   bool collidesWithItem( QGraphicsItem *other, Qt::ItemSelectionMode mode);
+    bool collidesWithItem( QGraphicsItem *other, Qt::ItemSelectionMode mode);
+    void rePositioning();
+
 
 private:
+    int changeX(){return this->pos().x();};
+    void setChangeX(int);
+    int changeY(){return this->pos().y();};
+    void setChangeY(int);
+
     //sin and cos for collision
     double coss(double a) {
         return sqrt(1. / (a * a + 1));

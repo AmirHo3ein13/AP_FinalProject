@@ -9,15 +9,63 @@
 
 Ball::Ball(RealPlayer *p1, RealPlayer *p2, QLabel *l1, QLabel *l2, double cX, double cY, QObject *parent) : QObject(parent), Circle(cX, cY), animation(new QPropertyAnimation(this))// change the circle r, x, y too appropriate things
 {
+    setPos(0, 0);
     this->l1 = l1; this->l2 = l2;
     this->p1 = p1; this->p2 = p2;
     this->vX = 0; this->vY = 0;
     setPixmap(QPixmap(":/Images/ball.png"));
-    setPos(cX - 15, cY - 15);
     r = 15;
     animation->setPropertyName("movingBall");
     animation->setTargetObject(this);
+
+    anForMovingX = new QPropertyAnimation(); anForMovingY = new QPropertyAnimation(this);
+    anForMovingX->setPropertyName("changeX"); anForMovingY->setPropertyName("changeY");
+    rePositioning();
 }
+
+
+//this func is for changing coordinates for QPropertyAnimation
+void Ball::setChangeX(int)
+{
+    if(this->pos().x() - 624.5 > 0) {
+        if(abs(this->pos().x() - 5) > 624.5)
+            this->setX(this->pos().x() - 5);
+        else {
+            this->setX(this->pos().x() - abs(this->pos().x() - 624.5));
+            this->anForMovingX->stop();
+        }
+    }
+    else {
+        if(abs(this->pos().x() + 5) < 624.5)
+            this->setX(this->pos().x() + 5);
+        else {
+            this->setX(this->pos().x() + abs(this->pos().x() - 624.5));
+            this->anForMovingX->stop();
+        }
+    }
+}
+
+//this func changes the coordinate for QPropertyAnimation
+void Ball::setChangeY(int)
+{
+    if(this->pos().y() - 325 > 0) {
+        if(abs(this->pos().y() - 5) > 325)
+            this->setY(this->pos().y() - 5);
+        else {
+            this->setY(this->pos().y() - abs(this->pos().y() - 325));
+            this->anForMovingY->stop();
+        }
+    }
+    else {
+        if(abs(this->pos().y() + 5) < 325)
+            this->setY(this->pos().y() + 5);
+        else {
+            this->setY(this->pos().y() + abs(this->pos().y() - 325));
+            this->anForMovingY->stop();
+        }
+    }
+}
+
 
 //this is for moving circle and checking collisions of circle
 void Ball::setMoving(int)
@@ -27,23 +75,19 @@ void Ball::setMoving(int)
         int num = l1->text().toInt();
         num++;
         l1->setText(QString::number(num));
-       // sleep(1000);
-        this->setPos(639.5 - 15, 340 - 15);
         this->animation->stop();
-//        this->animation->stop();
-//        p1->rePos();
-//        p2->rePos();
+        rePositioning();
+        p1->rePos();
+        p2->rePos();
     }
     if(this->xC(this->pos().x()) <103 && this->pos().y() > 228 && this->pos().y() < 456) {
         int num = l2->text().toInt();
         num++;
         l2->setText(QString::number(num));
-       // sleep(1000);
-        this->setPos(639.5 - 15, 340 - 15);
+        rePositioning();
         this->animation->stop();
-//        this->animation->stop();
-//        p1->rePos();
-//        p2->rePos();
+        p1->rePos();
+        p2->rePos();
     }
 
     //add some collision check and ...
@@ -188,3 +232,13 @@ bool Ball::collidesWithItem(QGraphicsItem *other, Qt::ItemSelectionMode mode)
     return false;
 }
 
+
+//animation of starting...
+void Ball::rePositioning()
+{
+    anForMovingX->setDuration(3000); anForMovingY->setDuration(3000);
+    anForMovingX->setStartValue(this->pos().x()); anForMovingX->setEndValue(624.5);
+    anForMovingY->setStartValue(this->pos().y()); anForMovingY->setEndValue(325);
+    anForMovingX->setTargetObject(this); anForMovingY->setTargetObject(this);
+    anForMovingX->start(); anForMovingY->start();
+}

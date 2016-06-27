@@ -11,14 +11,10 @@
 #include <cmath>
 #include <QMediaPlayer>
 #include "realplayer.h"
+#include <QPropertyAnimation>rr
 
 using namespace std;
 
-//this function is a thread so it overwrite the run function
-void Player::run()
-{
-
-}
 
 Player::Player(double cxX, double cyY, SocketThread *thread, int number, QObject *parent) : Circle(cxX, cyY), animation(new QPropertyAnimation(this)) //change the circle r, x, y too
 {
@@ -42,8 +38,10 @@ Player::Player(double cxX, double cyY, SocketThread *thread, int number, QObject
         setPos(0, 0);
     else
         setPos(1175, 0);
+    anForMovingX = new QPropertyAnimation(); anForMovingY = new QPropertyAnimation(this);
+    anForMovingX->setPropertyName("changeX"); anForMovingY->setPropertyName("changeY");
     finalDesX = cxX; finalDexY = cyY;
-    rePositioning();
+    //rePositioning();
     this->setFlag(QGraphicsItem::ItemIsMovable);
     this->setFlag(QGraphicsItem::ItemIsFocusable);
     this->setAcceptTouchEvents(true);
@@ -381,9 +379,7 @@ void Player::changeColorOfLine(int tmp)
 //animation of starting...
 void Player::rePositioning()
 {
-    anForMovingX = new QPropertyAnimation(this); anForMovingY = new QPropertyAnimation(this);
-    anForMovingX->setPropertyName("changeX"); anForMovingY->setPropertyName("changeY");
-    anForMovingX->setDuration(1500); anForMovingY->setDuration(1500);
+    anForMovingX->setDuration(3000); anForMovingY->setDuration(3000);
     anForMovingX->setStartValue(this->pos().x()); anForMovingX->setEndValue(this->finalDesX);
     anForMovingY->setStartValue(this->pos().y()); anForMovingY->setEndValue(this->finalDexY);
     anForMovingX->setTargetObject(this); anForMovingY->setTargetObject(this);

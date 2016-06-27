@@ -11,10 +11,10 @@ class RealPlayer
 {
 public:
     RealPlayer(SocketThread *, QGraphicsScene *, int, QString nameOfTeam);
+        Player *p[6];
 
 
 private:
-    Player *p[5];
     int score = 0;
      int x1, y1, x2, y2, x3, y3, x4, y4, x5, y5;
 

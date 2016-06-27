@@ -8,19 +8,17 @@
 #include <QGraphicsLineItem>
 #include <QPropertyAnimation>
 #include <cmath>
+#include <QObject>
 #include "circle.h"
 #include "socketthread.h"
-#include <QThread>
 
-class Player : public QThread , public QGraphicsPixmapItem , public Circle
+class Player : public QObject, public QGraphicsPixmapItem , public Circle
 {
     Q_OBJECT
-     Q_PROPERTY(int movePlayers READ movePlayers WRITE setMove)
+    Q_PROPERTY(int movePlayers READ movePlayers WRITE setMove)
     Q_PROPERTY(int changeX READ changeX WRITE setChangeX)
     Q_PROPERTY(int changeY READ changeY WRITE setChangeY)
 public:
-
-    void run();//this is a thread
 
     explicit Player(double, double, SocketThread *thread, int number, QObject *parent = 0);
 

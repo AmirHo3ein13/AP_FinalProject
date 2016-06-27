@@ -19,11 +19,11 @@
 Game::Game(QString player1Flag,QString player2Flag)
 {
 
-       t = new SocketThread();
-       connect(t, SIGNAL(drawLine(int,double,double)), this, SLOT(drawLine(int,double,double)));
-       connect(t, SIGNAL(movePlayer(int,double,double)), this, SLOT(movePlayer(int,double,double)));
-       connect(t, SIGNAL(playerN(int)), this, SLOT(playerN(int)));
-       t->start();
+//       t = new SocketThread();
+//       connect(t, SIGNAL(drawLine(int,double,double)), this, SLOT(drawLine(int,double,double)));
+//       connect(t, SIGNAL(movePlayer(int,double,double)), this, SLOT(movePlayer(int,double,double)));
+//       connect(t, SIGNAL(playerN(int)), this, SLOT(playerN(int)));
+//       t->start();
 
 
        scene = new QGraphicsScene();

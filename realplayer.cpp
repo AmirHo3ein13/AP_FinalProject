@@ -12,7 +12,7 @@ using namespace std;
 
 RealPlayer::RealPlayer(SocketThread *thread, QGraphicsScene *s, int a, QString nameOfTeam)
 {
-    //let the player select his team
+    //let the player select his/her team
     QFile file(":/Formatation/format.txt");
     file.open(QIODevice::ReadOnly);
     QString str = file.readLine();
@@ -26,18 +26,18 @@ RealPlayer::RealPlayer(SocketThread *thread, QGraphicsScene *s, int a, QString n
 
 
 
-    p[1] = new Player(x1, y1, thread, a); p[1]->playerNum = 1; p[1]->setPixmap(QPixmap(":/Images/" + nameOfTeam)); p[1]->run();
-    p[2] = new Player(x2, y2, thread, a); p[2]->playerNum = 2; p[2]->setPixmap(QPixmap(":/Images/" + nameOfTeam)); p[2]->run();
-    p[3] = new Player(x3, y3, thread, a); p[3]->playerNum = 3; p[3]->setPixmap(QPixmap(":/Images/" + nameOfTeam)); p[3]->run();
-    p[4] = new Player(x4, y4, thread, a); p[4]->playerNum = 4; p[4]->setPixmap(QPixmap(":/Images/" + nameOfTeam)); p[4]->run();
-    p[5] = new Player(x5, y5, thread, a), p[5]->playerNum = 5; p[5]->setPixmap(QPixmap(":/Images/" + nameOfTeam)); p[5]->run();
+    p[1] = new Player(x1, y1, thread, a); p[1]->playerNum = 1; p[1]->setPixmap(QPixmap(":/Images/" + nameOfTeam));
+    p[2] = new Player(x2, y2, thread, a); p[2]->playerNum = 2; p[2]->setPixmap(QPixmap(":/Images/" + nameOfTeam));
+    p[3] = new Player(x3, y3, thread, a); p[3]->playerNum = 3; p[3]->setPixmap(QPixmap(":/Images/" + nameOfTeam));
+    p[4] = new Player(x4, y4, thread, a); p[4]->playerNum = 4; p[4]->setPixmap(QPixmap(":/Images/" + nameOfTeam));
+    p[5] = new Player(x5, y5, thread, a), p[5]->playerNum = 5; p[5]->setPixmap(QPixmap(":/Images/" + nameOfTeam));
 
     s->addItem(p[1]);
     s->addItem(p[2]);
     s->addItem(p[3]);
     s->addItem(p[4]);
     s->addItem(p[5]);
-    //rePos();
+    rePos();
 
 }
 
@@ -56,10 +56,7 @@ void RealPlayer::drawLine(int a, double b, double c)
 
 void RealPlayer::rePos()
 {
-     p[0]->setPos(x1, y1);
-        p[1]->setPos(x2, y2);
-        p[2]->setPos(x3, y3);
-        p[3]->setPos(x4, y4);
-        p[4]->setPos(x5, y5);
+    for(int i = 1; i < 6; i++)
+        p[i]->rePositioning();
 }
 

@@ -6,14 +6,9 @@ using namespace std;
 
 SocketThread::SocketThread(QObject *parent)
 {
-    socket = new QTcpSocket();
-}
-
-void SocketThread::run()
-{
     socket->connectToHost("127.0.0.1", 1234);
     connect(socket, SIGNAL(readyRead()), this, SLOT(newMessage()));
-    exec();
+    socket = new QTcpSocket();
 }
 
 void SocketThread::sendMess(QString s)
