@@ -79,7 +79,7 @@ Game::Game(QTimer *timer, QString player1Flag,QString player2Flag)
        b4->setOpacity(0);
        b5->setOpacity(0);
        b6->setOpacity(0);
-       b7->setOpacity(0);
+       //b7->setOpacity(0);
        b8->setOpacity(0);
        b9->setOpacity(0);
        b10->setOpacity(0);

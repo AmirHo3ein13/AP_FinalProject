@@ -105,6 +105,53 @@ void Player::setMove(int)
     //add some collision check and ...
     this->setPos(this->pos().x() + vX, this->pos().y() + vY);
 
+    if(this->pos().x() <= 109 && (this->pos().y() <= 226 || this->pos().y() - this->r * 2 >= 458)) {
+        this->vX *= -.8;
+        this->setX(111);
+    }
+    if(this->pos().x() + this->r * 2 >= 1175 && (this->pos().y() <= 226 || this->pos().y() - this->r * 2 >= 458)) {
+        this->vX *= -.8;
+        this->setX(1173 - this->r * 2);
+    }
+    if(this->pos().y() <= 10) {
+        this->setY(11);
+        this->vY *= -.8;
+    }
+    if(this->pos().y() + this->r * 2 >= 674) {
+        this->setY(674 - this->r * 2);
+        this->vY *= -.8;
+    }
+    if(this->pos().x() < 109 && (this->pos().y() > 226 && this->pos().y() - this->r * 2 < 458)) {
+        if(this->pos().x() <= 35) {
+            this->vX *= -.8;
+            this->setX(36);
+        }
+        if(this->pos().y() <= 234) {
+            this->vY *= -.8;
+            this->setY(235);
+        }
+        if(this->pos().y() + this->r * 2 >= 458) {
+            this->vY *= -.8;
+            this->setY(457 - this->r * 2);
+        }
+    }
+
+    if(this->pos().x() + this->r * 2 > 1175 && (this->pos().y() > 230 && this->pos().y() - this->r * 2 < 458)) {
+        if(this->pos().x() + this->r * 2 >= 1250) {
+            this->vX *= -.8;
+            this->setX(1249 - this->r * 2);
+        }
+        if(this->pos().y() <= 234) {
+            this->vY *= -.8;
+            this->setY(235);
+        }
+        if(this->pos().y() + this->r * 2 >= 458) {
+            this->vY *= -.8;
+            this->setY(457 - this->r * 2);
+        }
+    }
+
+
     vX > 0 ? vX -= fx : vX += fx;
     vY > 0 ? vY -= fy : vY += fy;
     if(abs(vX) < .2 && abs(vY) < .2) {
@@ -159,47 +206,11 @@ void Player::setMove(int)
                    double sVx1 = sOnMCN * coss(mCNorm) * -1, sVx2 = sOnMC * coss(mCenters), sVy1 = sOnMCN * sinn(mCNorm) * -1, sVy2 = sOnMC * sinn(mCenters) * -1;
                    c->vX = sVx1 + sVx2; c->vY = sVy1 + sVy2;
                 }
-                this->setPos(this->pos().x() + 3 * this->vX, this->pos().y() + 3 * this->vY);
-                c->setPos(c->pos().x() + 2 * c->vX, c->pos().y() + 2 * c->vY);
                 this->startAnimaion();
                 c->startAnimaion();
             }
         }
-        if(Border *b = dynamic_cast<Border *> (l[i])) {
 
-            //addin sounds of ball and border collision...
-            QMediaPlayer *shot = new QMediaPlayer();
-            shot->setMedia(QUrl("qrc:/sounds/p2p.flac"));
-            shot->setVolume(110);
-            shot->play();
-
-            if(b->x1 == b->x2) {
-                this->vX *= -.8;
-                this->setPos(this->pos().x() + 2 * this->vX, this->pos().y() + 2 * this->vY);
-
-//                if(abs(xC(this->pos().x()) - b->x()) < this->r) {
-//                    if(xC(this->pos().x()) - b->x() < 0)
-//                        this->setX(this->pos().x() - abs(b->x() - this->r));
-//                    else if(xC(this->pos().x() - (b->x() + 5) > 0))
-//                        this->setX(this->pos().x() + abs(b->x() - this->r));
-//                }
-
-         }
-            //else if(b->y1 == b->y2) {
-            else if(this->pos().y() <= 10 || this->pos().y() + this->r * 2 >= 674) {
-                this->vY *= -.6;
-                this->setPos(this->pos().x() + 2 * this->vX, this->pos().y() + 2 * this->vY);
-                if(this->pos().y() < 10)
-                    this->setY(10);
-                else if(this->pos().y() > 674 - this->r * 2)
-                    this->setY(674);
-//                if(this->pos().y() < 6)
-//                    this->setY(6);
-//                if(this->pos().y() + this->r * 2 > 674)
-//                    this->setY(this->pos().y()- this->r * 2);
-//                this->setY(this->pos().y() + this->vY);
-            }
-        }
         else if(Ball *c = dynamic_cast<Ball *> (l[i])) {
 
             //adding sound of collision between player and ball...
@@ -230,8 +241,8 @@ void Player::setMove(int)
                 }
                 double fOnMC = picOfVxOnMC + picOfVyOnMC, fOnMCN = picOfVxOnMCN + picOfVyOnMCN, sOnMC = sPicOfVxONMC + sPicOfVyOnMC, sOnMCN = sPicofVxOnMCN + sPicOfVyOnMCN;
                 double tmp = fOnMC;
-                fOnMC = sOnMC * 1.4;
-                sOnMC = tmp * 1.2;
+                fOnMC = sOnMC / 2;
+                sOnMC = tmp;
                 if(mCenters < 0) {
                     double fVx1 = fOnMCN * coss(mCNorm), fVx2 = fOnMC * coss(mCenters) * -1, fVy1 = fOnMCN * sinn(mCNorm) * -1, fVy2 = fOnMC * sinn(mCenters) * -1;
                     this->vX = fVx1 + fVx2; this->vY = fVy1 + fVy2;
@@ -244,10 +255,7 @@ void Player::setMove(int)
                    double sVx1 = sOnMCN * coss(mCNorm) * -1, sVx2 = sOnMC * coss(mCenters), sVy1 = sOnMCN * sinn(mCNorm) * -1, sVy2 = sOnMC * sinn(mCenters) * -1;
                    c->vX = sVx1 + sVx2; c->vY = sVy1 + sVy2;
                 }
-                this->setPos(this->pos().x() + 2 * this->vX, this->pos().y() + 2 * this->vY);
-                c->setPos(c->pos().x() + 3 * c->vX, c->pos().y() + 3 * c->vY);
                 this->startAnimaion();
-                c->animation->start();
                 c->startAnimaion();
             }
         }
@@ -280,12 +288,12 @@ void Player::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
         this->scene()->removeItem(line);
 
         //settin speed
-        vX = -(event->pos().x() - this->xC(0)) / 7; // /7 is experiential
-        vY = -(event->pos().y() - this->yC(0)) / 7;
+        vX = -(event->pos().x() - this->xC(0)) / 4; // /7 is experiential
+        vY = -(event->pos().y() - this->yC(0)) / 4;
         double max = sqrt(vX * vX + vY * vY);
-        if(max > 10) {
-            vX = 10 * vX / max;
-            vY = 10 * vY / max;
+        if(max > 14) {
+            vX = 14 * vX / max;
+            vY = 14 * vY / max;
         }
         *changeTurn = 9;
         startAnimaion();
@@ -321,33 +329,22 @@ void Player::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 }
 
 //detect collisions
-bool Player::collidesWithItem(QGraphicsItem *other, Qt::ItemSelectionMode mode) const
+bool Player::collidesWithItem(const QGraphicsItem *other, Qt::ItemSelectionMode mode) const
 {
-    if(Ball *b = dynamic_cast<Ball *> (other)) {
-        double tX = this->Circle::x, tY = this->Circle::y, oX = b->Circle::x, oY = b->Circle::y;
+    if(const Ball *b = dynamic_cast<const Ball *> (other)) {
+        double tX = this->pos().x() + 35, tY = this->pos().y() + 35, oX = b->pos().x() + 15, oY = b->pos().y() + 15;
         double tmp = sqrt((tX - oX) * (tX - oX) + (tY - oY) * (tY - oY));
-        if(tmp <= this->r + b->r)
+        if(tmp <= 55) {
             return true;
+        }
         return false;
     }
-    else if (Player *b = dynamic_cast<Player *> (other)) {
-        double tX = this->Circle::x, tY = this->Circle::y, oX = b->Circle::x, oY = b->Circle::y;
+    else if (const Player *b = dynamic_cast<const Player *> (other)) {
+        double tX = this->pos().x(), tY = this->pos().y(), oX = b->pos().x(), oY = b->pos().y();
         double tmp = sqrt((tX - oX) * (tX - oX) + (tY - oY) * (tY - oY));
-        if(tmp <= this->r + b->r)
+        if(tmp <= 75)
             return true;
         return false;
-    }
-    else if(Border *b = dynamic_cast<Border *> (other)) {
-        if(b->x1 == b->x2) {
-            if(abs(this->Circle::x - b->x1) <= this->r)
-                return true;
-            return false;
-        }
-        else {
-            if(abs(this->Circle::y - b->y1) <= this->r)
-                return true;
-            return false;
-        }
     }
     return false;
 }
@@ -374,7 +371,7 @@ double Player::xC(double d) {
 }
 
 double Player::yC(double d) {
-    return d + 38.5;
+    return d + 35;
 }
 
 //this func will change the color of Line

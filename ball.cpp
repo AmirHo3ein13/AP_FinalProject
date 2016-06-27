@@ -92,6 +92,25 @@ void Ball::setMoving(int)
 
     //add some collision check and ...
     this->setPos(this->pos().x() + vX, this->pos().y() + vY);
+
+    if(this->pos().x() <= 109 && (this->pos().y() <= 226 || this->pos().y() - this->r * 2 >= 458)) {
+        this->vX *= -.8;
+        this->setX(111);
+    }
+
+    if(this->pos().x() + this->r * 2 >= 1175 && (this->pos().y() <= 226 || this->pos().y() - this->r * 2 >= 458)) {
+        this->vX *= -.8;
+        this->setX(1173 - this->r * 2);
+    }
+    if(this->pos().y() <= 10) {
+        this->setY(11);
+        this->vY *= -.8;
+    }
+    if(this->pos().y() + this->r * 2 >= 674) {
+        this->setY(674 - this->r * 2);
+        this->vY *= -.8;
+    }
+
     vX > 0 ? vX -= fX : vX += fX;
     vY > 0 ? vY -= fY : vY += fY;
     if(abs(vX) < .2 && abs(vY) < .2) {
@@ -100,42 +119,6 @@ void Ball::setMoving(int)
     }
     QList<QGraphicsItem *> l = this->collidingItems();
     for(int i = 0; i < l.size(); i++) {
-        if(Border *b = dynamic_cast<Border *> (l[i])) {
-
-            //addin sounds of ball and border collision...
-            QMediaPlayer *shot = new QMediaPlayer();
-            shot->setMedia(QUrl("qrc:/sounds/p2p.flac"));
-            shot->setVolume(110);
-            shot->play();
-
-            if(b->x1 == b->x2) {
-                this->vX *= -.8;
-                this->setPos(this->pos().x() + 2 * this->vX, this->pos().y() + 2 * this->vY);
-
-//                if(abs(xC(this->pos().x()) - b->x()) < this->r) {
-//                    if(xC(this->pos().x()) - b->x() < 0)
-//                        this->setX(this->pos().x() - abs(b->x() - this->r));
-//                    else if(xC(this->pos().x() - (b->x() + 5) > 0))
-//                        this->setX(this->pos().x() + abs(b->x() - this->r));
-//                }
-
-         }
-            //else if(b->y1 == b->y2) {
-            else if(this->pos().y() <= 10 || this->pos().y() + this->r * 2 >= 674) {
-                this->vY *= -.6;
-                this->setPos(this->pos().x() + 2 * this->vX, this->pos().y() + 2 * this->vY);
-                if(this->pos().y() < 10)
-                    this->setY(10);
-                else if(this->pos().y() > 674 - this->r * 2)
-                    this->setY(674);
-//                if(this->pos().y() < 6)
-//                    this->setY(6);
-//                if(this->pos().y() + this->r * 2 > 674)
-//                    this->setY(this->pos().y()- this->r * 2);
-//                this->setY(this->pos().y() + this->vY);
-            }
-        }
-
         //checking collision between player and ball
         if(Player *c = dynamic_cast<Player *> (l[i])) {
 
@@ -169,7 +152,7 @@ void Ball::setMoving(int)
                 double fOnMC = picOfVxOnMC + picOfVyOnMC, fOnMCN = picOfVxOnMCN + picOfVyOnMCN, sOnMC = sPicOfVxONMC + sPicOfVyOnMC, sOnMCN = sPicofVxOnMCN + sPicOfVyOnMCN;
                 double tmp = fOnMC;
                 fOnMC = sOnMC;
-                sOnMC = tmp;
+                sOnMC = tmp / 2;
                 if(mCenters < 0) {
                     double fVx1 = fOnMCN * coss(mCNorm), fVx2 = fOnMC * coss(mCenters) * -1, fVy1 = fOnMCN * sinn(mCNorm) * -1, fVy2 = fOnMC * sinn(mCenters) * -1;
                     this->vX = fVx1 + fVx2; this->vY = fVy1 + fVy2;
@@ -182,8 +165,6 @@ void Ball::setMoving(int)
                    double sVx1 = sOnMCN * coss(mCNorm) * -1, sVx2 = sOnMC * coss(mCenters), sVy1 = sOnMCN * sinn(mCNorm) * -1, sVy2 = sOnMC * sinn(mCenters) * -1;
                    c->vX = sVx1 + sVx2; c->vY = sVy1 + sVy2;
                 }
-                this->setPos(this->pos().x() + 3 * this->vX, this->pos().y() + 3 * this->vY);
-                c->setPos(c->pos().x() + 2 * c->vX, c->pos().y() + 2 * c->vY);
                 this->startAnimaion();
                 c->startAnimaion();
             }
@@ -200,36 +181,25 @@ void Ball::startAnimaion()
     animation->pause();
     animation->setStartValue(vX);
     animation->setEndValue(0);
-    animation->setDuration(2000000);
+    animation->setDuration(15000);
     animation->start();
 }
 
 
 //this item checks if things collide with ball...
-bool Ball::collidesWithItem(QGraphicsItem *other, Qt::ItemSelectionMode mode)
+bool Ball::collidesWithItem(const QGraphicsItem *other, Qt::ItemSelectionMode mode) const
 {
     
-    if (Player *b = dynamic_cast<Player *> (other)) {
-        double tX = this->Circle::x, tY = this->Circle::y, oX = b->Circle::x, oY = b->Circle::y;
+    if (const Player *b = dynamic_cast<const Player *> (other)) {
+        double tX = this->pos().x() + 15, tY = this->pos().y() + 15, oX = b->pos().x() + 35, oY = b->pos().y() + 35;
         double tmp = sqrt((tX - oX) * (tX - oX) + (tY - oY) * (tY - oY));
-        if(tmp <= this->r + 3 + b->r)
+        if(tmp <= 55) {
+                        qDebug() << tmp;
             return true;
+        }
         return false;
     }
-    else if(Border *b = dynamic_cast<Border *> (other)) {
-        if(b->x1 == b->x2) {
-            if(this->pos().x() <= b->x1 + 100)
-                return true;
-            return false;
-        }
-        else {
-            double yy = this->Circle::y;
-            if(abs(yC(this->pos().y()) - b->y1) <= this->r + 2)
-                return true;
-            return false;
-        }
-    }
-    return false;
+   return false;
 }
 
 

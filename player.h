@@ -35,7 +35,7 @@ public:
     void mousePressEvent(QGraphicsSceneMouseEvent *);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *);
     void mouseMoveEvent(QGraphicsSceneMouseEvent *);
-    bool collidesWithItem(QGraphicsItem *other, Qt::ItemSelectionMode mode) const;
+    bool collidesWithItem(const QGraphicsItem *other, Qt::ItemSelectionMode mode) const;
     double r;
     double xC(double);
     double yC(double);

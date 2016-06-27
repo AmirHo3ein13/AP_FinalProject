@@ -21,12 +21,12 @@ public:
     int movingBall(){};
     void setMoving(int);
     double r;
-    double xC(double){return this->pos().x() + 15;}
-    double yC(double){return this->pos().y() + 15;}
+    double xC(double a){return a + 15;}
+    double yC(double a){return a + 15;}
     double vX, vY, fX, fY;
     QPropertyAnimation *animation, *anForMovingX, *anForMovingY;
     void startAnimaion();
-    bool collidesWithItem( QGraphicsItem *other, Qt::ItemSelectionMode mode);
+    bool collidesWithItem(const QGraphicsItem *other, Qt::ItemSelectionMode mode) const;
     void rePositioning();
 
 

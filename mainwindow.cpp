@@ -20,7 +20,7 @@ MainWindow::MainWindow(QTimer *t, QWidget *parent) :
         ui->ql->setStyleSheet("QLabel { background-color : white;}");
         ui->ql_2->setStyleSheet("QLabel { background-color : white;}");
         ui->ipL->setStyleSheet("QLabel { background-color : white;}");
-        ui->IranRB->setChecked(true);
+        ui->brasilRB->setChecked(true);
         ui->germanyRB_2->setChecked(true);
 
         QMediaPlaylist *playlist = new QMediaPlaylist();
