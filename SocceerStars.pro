@@ -38,6 +38,7 @@ HEADERS  += mainwindow.h \
     waiting.h
 
 FORMS    += mainwindow.ui \
+    waiting.ui
 
     waiting.ui
 

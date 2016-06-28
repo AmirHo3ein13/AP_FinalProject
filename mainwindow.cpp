@@ -4,7 +4,6 @@
 #include <QMediaPlayer>
 #include <QMediaPlaylist>
 #include "waiting.h"
-#include "messagedialog.h"
 
 MainWindow::MainWindow(QTimer *t, QWidget *parent) :
     QMainWindow(parent),
