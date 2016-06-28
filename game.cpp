@@ -17,14 +17,15 @@
 #include <QProgressBar>
 
 
-Game::Game(QTimer *timer, QString player1Flag,QString player2Flag)
+Game::Game(SocketThread *t, QTimer *timer, QString player1Flag,QString player2Flag)
 {
-
-//       t = new SocketThread();
-//       connect(t, SIGNAL(drawLine(int,double,double)), this, SLOT(drawLine(int,double,double)));
-//       connect(t, SIGNAL(movePlayer(int,double,double)), this, SLOT(movePlayer(int,double,double)));
-//       connect(t, SIGNAL(playerN(int)), this, SLOT(playerN(int)));
-//       t->start();
+       this->t = t;
+       connect(t, SIGNAL(drawLine(int,double,double)), this, SLOT(drawLine(int,double,double)));
+       connect(t, SIGNAL(movePlayer(int, int,double,double)), this, SLOT(movePlayer(int, int,double,double)));
+       connect(t, SIGNAL(playerN(int)), this, SLOT(playerN(int)));
+       connect(t, SIGNAL(ballMv(double,double)), this, SLOT(BallMv(double,double)));
+       connect(t, SIGNAL(changeTurn()), this, SLOT(changeTurn()));
+       //t->start();
 
 
        scene = new QGraphicsScene();
@@ -56,14 +57,13 @@ Game::Game(QTimer *timer, QString player1Flag,QString player2Flag)
        //creating real players...
        p1 = new RealPlayer (t, scene, 1, player1Flag + ".png");
        p2 = new RealPlayer (t, scene, 2, player2Flag + ".png");
-       p1->change(true); p2->change(false);
-       p1->isMyTurn = true; p2->isMyTurn = false;
        scene->addItem(pm1);
        scene->addItem(pm2);
 
        //creating ball
-       QLabel *q1 = new QLabel, *q2 = new QLabel;
-       Ball *b = new Ball(p1, p2, q1, q2, 639.5, 340);
+       q1 = new QLabel, q2 = new QLabel;
+       b = new Ball(p1, p2, q1, q2, 639.5, 340);
+       b->thread = t;
        scene->addItem(b);
 
 
@@ -177,30 +177,43 @@ void Game::setTurn()
 
     chan++;
     if(!(chan % 10)) {
-        if(p1->isMyTurn == true) {
-            p1->isMyTurn = false;
-            p2->isMyTurn = true;
-            p1->change(false); p2->change(true);
+        if(num == 1) {
+            p1->isMyTurn = !p1->isMyTurn;
+            p1->change(p1->isMyTurn);
         }
         else {
-            p2->isMyTurn = false;
-            p1->isMyTurn = true;
-            p2->change(false); p1->change(true);
+            p2->isMyTurn = !p2->isMyTurn;
+            p2->change(p2->isMyTurn);
         }
     }
-    if(p1->isMyTurn) {
-        bar1->setValue((chan % 10) * 10);
-        bar2->setValue(0);
+
+    if(num == 1) {
+        if(p1->isMyTurn) {
+            bar1->setValue((chan % 10) * 10);
+            bar2->setValue(0);
+        }
+        else {
+            bar1->setValue(0);
+            bar2->setValue((chan % 10) * 10);
+        }
     }
-    else if(p2->isMyTurn) {
-        bar1->setValue(0);
-        bar2->setValue((chan % 10) * 10);
+    else {
+        if(p2->isMyTurn) {
+            bar1->setValue(0);
+            bar2->setValue((chan % 10) * 10);
+
+        }
+        else {
+            bar1->setValue((chan % 10) * 10);
+            bar2->setValue(0);
+        }
     }
+
 }
 
-void Game::movePlayer(int a, double b, double c)
+void Game::movePlayer(int a, int n, double b, double c)
 {
-    if(num == 1) {
+    if(n == 2) {
         p2->movePlayer(a, b, c);
     }
     else
@@ -218,6 +231,50 @@ void Game::drawLine(int a, double b, double c)
 void Game::playerN(int a)
 {
     num = a;
+
+    if(a == 1) {
+        p1->change(true); p2->change(false);
+        p1->isMyTurn = true; p2->isMyTurn = false;
+    }
+    else {
+        p2->change(false); p1->change(false);
+        p2->isMyTurn = false; p1->isMyTurn = false;
+    }
+}
+
+void Game::BallMv(double a, double d)
+{
+    static int rep = 0;
+    rep++;
+        this->b->setPos(a, d);
+        if(b->xC(a) > 1177 && d > 228 && d < 453 && rep % 2) {
+            int num = q1->text().toInt();
+            num++;
+            q1->setText(QString::number(num));
+            b->animation->stop();
+            b->anForMovingX->stop();
+            b->anForMovingY->stop();
+            b->rePositioning();
+            p1->rePos();
+            p2->rePos();
+        }
+        if(b->xC(a) <103 && d > 228 && d < 456 && rep %2) {
+            rep++;
+            int num = q2->text().toInt();
+            num++;
+            q2->setText(QString::number(num));
+            b->anForMovingX->stop();
+            b->anForMovingY->stop();
+            b->rePositioning();
+            b->animation->stop();
+            p1->rePos();
+            p2->rePos();
+        }
+}
+
+void Game::changeTurn()
+{
+    this->chan = 9;
 }
 
 

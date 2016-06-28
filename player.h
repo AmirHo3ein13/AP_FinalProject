@@ -30,7 +30,8 @@ public:
 
     int movePlayers(){return 0;};
     void setMove(int);
-    int playerNum;
+    int playerNum, rPN;
+
     //mouse events
     void mousePressEvent(QGraphicsSceneMouseEvent *);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *);

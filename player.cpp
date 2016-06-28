@@ -18,9 +18,10 @@ using namespace std;
 
 Player::Player(double cxX, double cyY, SocketThread *thread, int number) : Circle(cxX, cyY), animation(new QPropertyAnimation(this)) //change the circle r, x, y too
 {
+    this->rPN = number;
+
 
     this->thread = thread;
-    this->number = number;
     this->vX = this->vY = 0;
     r = 35;
     width = 70; height = 77;//this may be changed...
@@ -151,11 +152,15 @@ void Player::setMove(int)
         }
     }
 
+    QString st = "2 " + QString::number(this->playerNum) + " " + QString::number(this->rPN) + " " + QString::number(this->pos().x()) + " " + QString::number(this->pos().y());
+    st.append(QChar(23));
+    thread->sendMess(st);
 
     vX > 0 ? vX -= fx : vX += fx;
     vY > 0 ? vY -= fy : vY += fy;
-    if(abs(vX) < .2 && abs(vY) < .2) {
-
+    if(abs(vX) < .3 && abs(vY) < .3) {
+        this->vX = 0;
+        this->vY = 0;
         animation->stop();
         return;
     }
@@ -171,6 +176,9 @@ void Player::setMove(int)
             shot->play();
 
             double thisCx = xC(this->pos().x()), thisCy = yC(this->pos().y()), otherCx = c->xC(c->pos().x()), otherCy = c->yC(c->pos().y());
+
+
+
             thisCy *= -1; otherCy *= -1;
             if(thisCx - otherCx == 0) {
                 double tmp = this->vY;
@@ -279,13 +287,13 @@ void Player::mousePressEvent(QGraphicsSceneMouseEvent *event)
 void Player::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
     if(changable) {
-        //send informations to server
-
-
 
         //set line invisible
         line->setVisible(false);
         this->scene()->removeItem(line);
+        QString st = "1 " + QString::number(this->playerNum) + " " + "-1" + " " + "-1" + " ";
+        st.append(QChar(23));
+        thread->sendMess(st);
 
         //settin speed
         vX = -(event->pos().x() - this->xC(0)) / 3; // /7 is experiential
@@ -295,7 +303,22 @@ void Player::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
             vX = 12 * vX / max;
             vY = 12 * vY / max;
         }
-        *changeTurn = 9;
+
+        int vvX = vX * 1000, vvY = vY * 1000;
+        vX = vvX / 1000.; vY = vvY / 1000.;
+
+//        st = "2 " + QString::number(this->playerNum) + " " + QString::number(vX) + " " + QString::number(vY);
+//        st.append(QChar(23));
+//        thread->sendMess(st);
+
+
+
+        //*changeTurn = 9;
+        QString s = "12";
+        s.append(QChar(23));
+        thread->sendMess(s);
+
+        qDebug() << "sender V " << vX << " " << vY;
         startAnimaion();
     }
 }
@@ -311,20 +334,27 @@ void Player::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
            xx = xC(0) - ((xC(0) - xx) * 100. / tmp);
            yy = yC(0) - ((yC(0) - yy) * 100. / tmp);
            line->setLine(xC(0), yC(0), xx, yy);
+           QString st = "1 " + QString::number(this->playerNum) + " " + QString::number(xx) + " " + QString::number(yy);
+           st.append(QChar(23));
+           thread->sendMess(st);
         }
         else {
             line->setLine(xC(0), yC(0), -(event->pos().x() - 2 * xC(0)), -(event->pos().y() - 2 * yC(0)));
+            QString st = "1 " + QString::number(this->playerNum) + " " + QString::number(-(event->pos().x() - 2 * xC(0))) + " " + QString::number(-(event->pos().y() - 2 * yC(0))) + " ";
+            st.append(QChar(23));
+            thread->sendMess(st);
         }
         changeColorOfLine(tmp);
 
         //send informations to server
-        QString st = "1 " + QString::number(this->playerNum) + " " + QString::number(-(event->pos().x() - 2 * xC(0))) + " " + QString::number(-(event->pos().y() - 2 * yC(0))) + " ";
-        st.append(QChar(23));
-        //thread->sendMess(st);
+
     }
     else {
         line->setVisible(false);
         this->scene()->removeItem(line);
+        QString st = "1 " + QString::number(this->playerNum) + " " + "-1" + " " + "-1" + " ";
+        st.append(QChar(23));
+        thread->sendMess(st);
     }
 }
 
@@ -350,18 +380,25 @@ bool Player::collidesWithItem(const QGraphicsItem *other, Qt::ItemSelectionMode 
 }
 
 //when server sends movePlayer Singnal
-void Player::movePlayer(double, double)
+void Player::movePlayer(double a, double b)
 {
-
+    this->setX(a);
+    this->setY(b);
 }
 
 
 //when server sends drawLine Signal
 void Player::drawLine(double a, double b)
 {
-    a = abs(a - xC(this->pos().x())); b = abs(b - yC(this->pos().y()));
+    if(a == -1 && b == -1) {
+        this->scene()->removeItem(line);
+        line->setVisible(false);
+        return;
+    }
+    line->setVisible(true);
+    //double aa = abs(a - xC(this->pos().x())); double bb = abs(b - yC(this->pos().y()));
     int tmp = sqrt(a * a + b * b);
-
+    line->setLine(xC(0), yC(0), a, b);
     changeColorOfLine(tmp);
 }
 
@@ -403,6 +440,8 @@ void Player::startAnimaion()
     //function for starting animation of Player
     double tmp = sqrt(vX * vX + vY * vY);
     fx = abs(vX) / (tmp * 10), fy = abs(vY) / (tmp * 10);
+    int ffX = fx * 1000, ffY = fy * 1000;
+    fx = ffX / 1000.; fy = ffY / 1000.;
     animation->pause();
     animation->setStartValue(vX);
     animation->setEndValue(0);

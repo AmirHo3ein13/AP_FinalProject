@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QMediaPlayer>
+#include "socketthread.h"
 
 namespace Ui {
 class MainWindow;
@@ -23,9 +24,13 @@ private slots:
 
     void on_quit_clicked();
 
+    void nameAccepted();
+
 private:
+    QString flag1;
     QMediaPlayer *music;
     Ui::MainWindow *ui;
+    SocketThread *thread;
 };
 
 #endif // MAINWINDOW_H

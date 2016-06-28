@@ -3,6 +3,7 @@
 #include "border.h"
 #include <QDebug>
 #include <QMediaPlayer>
+#include "socketthread.h"
 #include <QLabel>
 #include <stdlib.h>
 #include <unistd.h>
@@ -70,26 +71,6 @@ void Ball::setChangeY(int)
 //this is for moving circle and checking collisions of circle
 void Ball::setMoving(int)
 {
-    //checking for goal,
-    if(this->xC(this->pos().x()) > 1177 && this->pos().y() > 228 && this->pos().y() < 453) {
-        int num = l1->text().toInt();
-        num++;
-        l1->setText(QString::number(num));
-        this->animation->stop();
-        rePositioning();
-        p1->rePos();
-        p2->rePos();
-    }
-    if(this->xC(this->pos().x()) <103 && this->pos().y() > 228 && this->pos().y() < 456) {
-        int num = l2->text().toInt();
-        num++;
-        l2->setText(QString::number(num));
-        rePositioning();
-        this->animation->stop();
-        p1->rePos();
-        p2->rePos();
-    }
-
     //add some collision check and ...
     this->setPos(this->pos().x() + vX, this->pos().y() + vY);
 
@@ -111,9 +92,30 @@ void Ball::setMoving(int)
         this->vY *= -.8;
     }
 
+    QString str = "5 " + QString::number(this->pos().x()) + " " + QString::number(this->pos().y());
+    str.append(QChar(23));
+    thread->sendMess(str);
+
+    //checking for goal,
+    if(this->xC(this->pos().x()) > 1177 && this->pos().y() > 228 && this->pos().y() < 453) {
+        this->vX = 0;
+        this->vY = 0;
+        this->animation->stop();
+        return;
+    }
+    if(this->xC(this->pos().x()) <103 && this->pos().y() > 228 && this->pos().y() < 456) {
+        this->vX = 0;
+        this->vY = 0;
+        this->animation->stop();
+        return;
+    }
+
+
     vX > 0 ? vX -= fX : vX += fX;
     vY > 0 ? vY -= fY : vY += fY;
-    if(abs(vX) < .2 && abs(vY) < .2) {
+    if(abs(vX) < .3 && abs(vY) < .3) {
+        this->vX = 0;
+        this->vY = 0;
         animation->stop();
         return;
     }

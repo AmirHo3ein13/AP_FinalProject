@@ -14,8 +14,10 @@ class Game : public QObject
 {
     Q_OBJECT
    public:
-       explicit Game(QTimer *, QString,QString);
+       explicit Game(SocketThread *, QTimer *, QString,QString);
        int chan = 0;
+       Ball *b;
+
    private:
        QTimer *timer;
        RealPlayer *p1, *p2;
@@ -24,12 +26,16 @@ class Game : public QObject
        int num;
        SocketThread *t;
        QProgressBar *bar1, *bar2;
+       QLabel *q1, *q2;
 
    private slots:
        void setTurn();
-       void movePlayer(int, double, double);
+       void movePlayer(int, int, double, double);
        void drawLine(int, double, double);
        void playerN(int);
+       void BallMv(double, double);
+       void changeTurn();
+
 
        //QTcpSocket with thread...
        //add appropriate lines...

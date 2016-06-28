@@ -24,7 +24,8 @@ SOURCES += main.cpp\
     border.cpp \
     game.cpp \
     socketthread.cpp \
-    messagedialog.cpp
+    messagedialog.cpp \
+    waiting.cpp
 
 HEADERS  += mainwindow.h \
     realplayer.h \
@@ -35,11 +36,13 @@ HEADERS  += mainwindow.h \
     border.h \
     game.h \
     socketthread.h \
-    messagedialog.h
+    messagedialog.h \
+    waiting.h
 
 FORMS    += mainwindow.ui \
     ../Desktop/ap2/messagedialog.ui \
-    messagedialog.ui
+    messagedialog.ui \
+    waiting.ui
 
 RESOURCES += \
     resources.qrc

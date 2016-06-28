@@ -19,6 +19,9 @@ class Ball : public QObject, public QGraphicsPixmapItem, public Circle
 public:
     explicit Ball(RealPlayer *p1, RealPlayer *p2,QLabel *l1, QLabel *l2, double, double, QObject *parent = 0);
     int movingBall(){};
+
+    SocketThread *thread;
+
     void setMoving(int);
     double r;
     double xC(double a){return a + 15;}

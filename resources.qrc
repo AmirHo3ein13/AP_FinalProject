@@ -14,6 +14,8 @@
         <file>bg.png</file>
         <file>brasil.png</file>
         <file>germany.png</file>
+        <file>waiting.gif</file>
+        <file>wait.gif</file>
     </qresource>
     <qresource prefix="/Formatation">
         <file>FormatationFile.txt</file>

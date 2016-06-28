@@ -8,15 +8,19 @@ class SocketThread : public QObject
 {
     Q_OBJECT
 public:
-    explicit SocketThread(QObject *parent = 0);
+    explicit SocketThread(QString ip, QObject *parent = 0);
     void sendMess(QString);
     QTcpSocket *socket;
     QString message;
 
 signals:
-    void movePlayer(int, double, double);
+    void movePlayer(int, int, double, double);
     void drawLine(int, double, double);
     void playerN(int);
+    void ballMv(double, double);
+    void startGame(QString s, QString s2);
+    void nameAccepted();
+    void changeTurn();
 
 private slots:
     void newMessage();

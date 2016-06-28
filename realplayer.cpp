@@ -52,18 +52,23 @@ void RealPlayer::change(bool b)
 //line
 void RealPlayer::movePlayer(int a, double b, double c)
 {
-    p[a - 1]->movePlayer(b, c);
+    p[a]->movePlayer(b, c);
 }
 
 //move
 void RealPlayer::drawLine(int a, double b, double c)
 {
-
-    p[a - 1]->drawLine(b, c);
+    //qDebug() << "drawing " << a << ' ' << b << " " << c;
+    p[a]->drawLine(b, c);
 }
 
 void RealPlayer::rePos()
 {
-    for(int i = 1; i < 6; i++)
-        p[i]->rePositioning();
+    for(int i = 1; i < 6; i++) {
+            p[i]->anForMovingX->stop();
+            p[i]->anForMovingY->stop();
+            p[i]->animation->stop();
+             p[i]->rePositioning();
+
+    }
 }
