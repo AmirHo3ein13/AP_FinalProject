@@ -269,7 +269,6 @@ void Game::BallMv(double a, double d)
             whistle->setVolume(100);
             whistle->play();
 
-            rep++;
             int num = q2->text().toInt();
             num++;
             q2->setText(QString::number(num));
