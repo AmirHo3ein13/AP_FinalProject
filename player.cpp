@@ -318,7 +318,6 @@ void Player::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
         s.append(QChar(23));
         thread->sendMess(s);
 
-        qDebug() << "sender V " << vX << " " << vY;
         startAnimaion();
     }
 }

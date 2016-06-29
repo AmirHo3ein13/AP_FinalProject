@@ -115,14 +115,14 @@ Game::Game(SocketThread *t, QTimer *timer, QString player1Flag,QString player2Fl
        scene->addItem(b12);
 
         // media of game
-        QMediaPlaylist *playlist = new QMediaPlaylist();
-        playlist->addMedia(QUrl("qrc:/sounds/play.mp3"));
-        playlist->setPlaybackMode(QMediaPlaylist::Loop);
+//        QMediaPlaylist *playlist = new QMediaPlaylist();
+//        playlist->addMedia(QUrl("qrc:/sounds/play.mp3"));
+//        playlist->setPlaybackMode(QMediaPlaylist::Loop);
 
-        QMediaPlayer *music = new QMediaPlayer();
-        music->setPlaylist(playlist);
-        music->setVolume(50);
-        music->play();
+//        QMediaPlayer *music = new QMediaPlayer();
+//        music->setPlaylist(playlist);
+//        music->setVolume(50);
+//        music->play();
 
         QMediaPlayer *whistle = new QMediaPlayer();
         whistle->setMedia(QUrl("qrc:/sounds/whistle.wav"));
@@ -248,6 +248,11 @@ void Game::BallMv(double a, double d)
     rep++;
         this->b->setPos(a, d);
         if(b->xC(a) > 1177 && d > 228 && d < 453 && rep % 2) {
+            QMediaPlayer *whistle = new QMediaPlayer();
+            whistle->setMedia(QUrl("qrc:/sounds/whistle.wav"));
+            whistle->setVolume(100);
+            whistle->play();
+
             int num = q1->text().toInt();
             num++;
             q1->setText(QString::number(num));
@@ -259,6 +264,11 @@ void Game::BallMv(double a, double d)
             p2->rePos();
         }
         if(b->xC(a) <103 && d > 228 && d < 456 && rep %2) {
+            QMediaPlayer *whistle = new QMediaPlayer();
+            whistle->setMedia(QUrl("qrc:/sounds/whistle.wav"));
+            whistle->setVolume(100);
+            whistle->play();
+
             rep++;
             int num = q2->text().toInt();
             num++;

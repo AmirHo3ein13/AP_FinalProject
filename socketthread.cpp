@@ -56,7 +56,6 @@ void SocketThread::newMessage() {
                 string t1, t2;
                 stream >> t1 >> t2;
                 QString qt = QString::fromStdString(t1), qt2 = QString::fromStdString(t2);
-                qDebug() << qt << qt2 << "game is starting";
                 emit startGame(qt, qt2);
             }
             else if(a == 11)

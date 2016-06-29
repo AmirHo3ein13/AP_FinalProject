@@ -58,7 +58,6 @@ void RealPlayer::movePlayer(int a, double b, double c)
 //move
 void RealPlayer::drawLine(int a, double b, double c)
 {
-    //qDebug() << "drawing " << a << ' ' << b << " " << c;
     p[a]->drawLine(b, c);
 }
 
